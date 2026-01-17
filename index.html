@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog do Técnico - Linux & Games</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    
+    <style>
+        /* ESTILOS EXTRAS */
+        .cabecalho-principal { border-bottom: 1px solid #333; margin-bottom: 30px; padding-bottom: 20px; }
+        
+        /* Destaques */
+        .destaque-numero { color: #00FF00; font-weight: bold; font-size: 1.5em; }
+        table { margin-top: 20px; margin-bottom: 20px; }
+        
+        /* O SEGREDO: As telas dos artigos começam escondidas */
+        #tela-linux, #tela-minecraft {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        
+        <div id="tela-menu">
+            
+            <nav>
+                <ul>
+                    <li><strong>🐧 Linux Tech Blog</strong></li>
+                </ul>
+                <ul>
+                    <li><small>Hardware & Otimização</small></li>
+                </ul>
+            </nav>
+
+            <header class="cabecalho-principal">
+                <h1>Bem-vindo ao Laboratório</h1>
+                <p>Dicas reais de quem extrai desempenho máximo de hardware antigo.</p>
+            </header>
+
+            <article>
+                <header>
+                    <small>17/01/2026 • Hardware</small>
+                    <h3>Como salvei um PC antigo com Linux Mint</h3>
+                </header>
+                <p>Se o seu PC tem 4GB de RAM e processador antigo, o Windows está matando ele. Veja a solução.</p>
+                <footer>
+                    <button onclick="abrirLinux()">Ler artigo completo</button>
+                </footer>
+            </article>
+
+            <article>
+                <header>
+                    <small>17/01/2026 • Games</small>
+                    <h3>Minecraft 1.21 em PC Fraco</h3>
+                </header>
+                <p>Configuração exata para rodar a última versão sem placa de vídeo.</p>
+                <footer>
+                    <button onclick="abrirMinecraft()" class="contrast">Ler artigo completo</button>
+                </footer>
+            </article>
+        </div>
+
+        <div id="tela-linux">
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="voltarMenu()">⬅ Voltar para o Menu</a></li>
+                </ul>
+            </nav>
+
+            <article>
+                <header>
+                    <h1>Como salvei meu PC antigo com Linux Mint</h1>
+                    <p><strong>Por:</strong> O Técnico • <strong>Data:</strong> 17/01/2026</p>
+                    <p><em>Hardware testado: AMD Athlon II X2 + 4GB de RAM</em></p>
+                </header>
+
+                <p>Se você, assim como eu, tem um computador que já foi considerado bom há 10 anos, mas hoje sofre para abrir um vídeo no YouTube, esse artigo é para você. Muita gente joga essas máquinas no lixo, mas eu provei que elas ainda têm salvação.</p>
+
+                <h3>1. O Problema: Windows em Hardware Antigo</h3>
+                <p>O Windows 10 e 11 são sistemas pesados. Eles rodam centenas de processos em segundo plano (telemetria, atualizações, antivírus) que "comem" o processador e a memória RAM.</p>
+                <p>No meu Athlon II X2, a situação era triste:</p>
+                <ul>
+                    <li><strong>Boot Lento:</strong> O PC demorava minutos para ficar usável.</li>
+                    <li><strong>RAM Esgotada:</strong> Só de ligar, o sistema já consumia 2.5GB dos meus 4GB disponíveis.</li>
+                    <li><strong>Travamentos:</strong> Abrir o navegador e o Discord ao mesmo tempo? Nem pensar.</li>
+                </ul>
+
+                <h3>2. A Solução: Linux Mint (XFCE ou Cinnamon)</h3>
+                <p>Decidi remover o Windows e instalar o <strong>Linux Mint</strong>. A diferença não foi pouca, foi brutal. O Linux gerencia a memória de forma muito mais inteligente.</p>
+                
+                <blockquote>
+                    "Enquanto o Windows trata 4GB de RAM como o mínimo aceitável, o Linux trata como luxo."
+                </blockquote>
+
+                <h3>3. O Resultado Prático (Comparação)</h3>
+                <p>Após a instalação e as atualizações (que fiz via terminal), os números falam por si:</p>
+                
+                <figure>
+                    <table role="grid">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tarefa</th>
+                                <th scope="col">Windows 10</th>
+                                <th scope="col">Linux Mint</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Consumo ao Ligar</th>
+                                <td>2.4 GB</td>
+                                <td><strong>600 MB - 900 MB</strong></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Navegador (3 abas)</th>
+                                <td>Lento / Travando</td>
+                                <td>Fluido</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ventoinha (Cooler)</th>
+                                <td>Turbina de avião ✈️</td>
+                                <td>Silencioso 🤫</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </figure>
+
+                <h3>4. Instalação de Programas (Sem vírus)</h3>
+                <p>Outra vantagem gigante é não precisar ficar caçando instaladores <code>.exe</code> em sites duvidosos. No Linux, usamos repositórios oficiais.</p>
+                <p>Para configurar meu ambiente de desenvolvimento web, usei apenas um comando no terminal para instalar o Sublime Text via Flatpak:</p>
+                <pre><code>flatpak install flathub com.sublimetext.three</code></pre>
+                <p>É rápido, seguro e sem aquelas barrinhas de navegador indesejadas.</p>
+
+                <h3>5. Conclusão</h3>
+                <p>Se você tem um PC encostado ou passando raiva com lentidão, não compre um novo ainda. Baixe a ISO do Linux Mint, faça um pendrive bootável e dê uma nova vida para ele. Meu Athlon II X2 agradece!</p>
+
+                <footer>
+                    <hr>
+                    <button onclick="voltarMenu()" class="secondary">Voltar para o Menu</button>
+                </footer>
+            </article>
+        </div>
+
+        <div id="tela-minecraft">
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="voltarMenu()">⬅ Voltar para o Menu</a></li>
+                </ul>
+            </nav>
+
+            <article>
+                <header>
+                    <h1>Como rodar Minecraft 1.21 Vanilla em PC de 4GB</h1>
+                    <p><strong>Configuração:</strong> Athlon II X2 • 4GB RAM • Linux Mint</p>
+                </header>
+
+                <p>Muita gente diz que é impossível jogar as versões novas do Minecraft (1.21+) em computadores antigos sem placa de vídeo dedicada. Eu provei que estão errados.</p>
+
+                <h3>O Segredo: A Alocação de Memória</h3>
+                <p>O maior erro é colocar memória demais ou de menos. Se você tem 4GB no total, não pode colocar 3GB pro jogo, senão o sistema trava porque falta RAM para o Linux.</p>
+                
+                <p>No meu TLauncher, cheguei no <strong>Número Mágico</strong>:</p>
+                <p class="destaque-numero">2018 MB</p>
+                <p>Isso deixa quase 2GB livres para o Linux Mint manter o áudio e o sistema rodando liso, sem engasgos.</p>
+
+                <h3>Configurações Gráficas (Vanilla Puro)</h3>
+                <p>Eu não usei mods como Sodium ou Optifine. O segredo está no ajuste manual dentro do menu do jogo:</p>
+                <ul>
+                    <li><strong>Gráficos:</strong> Rápidos (Fast)</li>
+                    <li><strong>Renderização (Chunks):</strong> Entre 4 e 6</li>
+                    <li><strong>Limite de FPS:</strong> <mark>Cravado em 60 FPS</mark></li>
+                    <li><strong>Partículas:</strong> Diminuídas (Minimais)</li>
+                </ul>
+
+                <h3>Conclusão</h3>
+                <p>Rodando a versão <strong>1.21.11</strong>, consegui estabilidade total. O jogo abre, o mundo carrega e dá para jogar sobrevivência tranquilo. O segredo é o equilíbrio entre o sistema operacional leve (Linux) e a alocação de RAM precisa.</p>
+
+                <footer>
+                    <hr>
+                    <button onclick="voltarMenu()" class="contrast">Voltar para o Menu</button>
+                </footer>
+            </article>
+        </div>
+
+    </main>
+
+    <script>
+        function abrirLinux() {
+            window.scrollTo(0,0); // Sobe pro topo
+            document.getElementById('tela-menu').style.display = 'none';
+            document.getElementById('tela-linux').style.display = 'block';
+            document.getElementById('tela-minecraft').style.display = 'none';
+        }
+
+        function abrirMinecraft() {
+            window.scrollTo(0,0); // Sobe pro topo
+            document.getElementById('tela-menu').style.display = 'none';
+            document.getElementById('tela-linux').style.display = 'none';
+            document.getElementById('tela-minecraft').style.display = 'block';
+        }
+
+        function voltarMenu() {
+            window.scrollTo(0,0); // Sobe pro topo
+            document.getElementById('tela-linux').style.display = 'none';
+            document.getElementById('tela-minecraft').style.display = 'none';
+            document.getElementById('tela-menu').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
