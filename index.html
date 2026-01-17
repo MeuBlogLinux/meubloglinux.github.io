@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Linux Lab - Tech & Games</title>
-    <meta name="theme-color" content="#050505">
+    <title>Linux Folia - Tech & Games</title> <meta name="theme-color" content="#050505">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,24 +17,44 @@
             --card-bg: #111; 
             --font: 'Fira Code', monospace; 
         }
-        body { background-color: var(--bg); font-family: var(--font); color: #ddd; padding-top: 80px; }
+        body { background-color: var(--bg); font-family: var(--font); color: #ddd; padding-top: 80px; overflow-x: hidden; }
+
+        /* ========================================= */
+        /* 🎭 TEMA DE CARNAVAL (CSS) 🎭       */
+        /* ========================================= */
+        /* Para remover o tema, apague daqui até o final do bloco */
+        :root {
+            --neon-green: #d600ff; /* Roxo Neon */
+            --neon-blue: #ffd700;  /* Dourado */
+        }
+        .confete {
+            position: fixed; top: -10px; z-index: 9999;
+            width: 10px; height: 10px;
+            animation: cair linear infinite;
+        }
+        @keyframes cair {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        /* FIM DO BLOCO DE CARNAVAL */
+        /* ========================================= */
 
         /* HEADER FIXO */
         .cyber-nav {
             position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95);
             border-bottom: 2px solid var(--neon-green); padding: 15px 20px; z-index: 999;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            box-shadow: 0 0 15px rgba(214, 0, 255, 0.3); /* Sombra Roxa */
         }
         .cyber-nav a { color: #fff; text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .cyber-nav a:hover { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
+        .cyber-nav a:hover { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
 
         /* CARDS (LISTA DE POSTS) */
         .card-post {
             background-color: var(--card-bg); border: 1px solid #333; border-left: 4px solid var(--neon-green);
             border-radius: 6px; margin-bottom: 25px; padding: 20px; transition: 0.2s;
         }
-        .card-post:hover { border-color: var(--neon-green); transform: translateX(5px); }
+        .card-post:hover { border-color: var(--neon-blue); transform: translateX(5px); }
 
         /* BOTÃO DE CURTIR */
         .btn-like {
@@ -57,20 +76,10 @@
         .caixa-sugestao { border: 1px dashed var(--neon-blue); padding: 25px; border-radius: 8px; margin-top: 30px; background: #0a0a0a; }
         textarea { background: #000 !important; border-color: #333 !important; color: #fff !important; }
         
-        /* ESTILO DO RELÓGIO */
-        #relogio-bloqueio {
-            display: none;
-            color: #ffdd57;
-            font-weight: bold;
-            margin-top: 10px;
-            text-align: center;
-            border: 1px solid #ffdd57;
-            padding: 10px;
-            border-radius: 5px;
-            background: rgba(255, 221, 87, 0.1);
-        }
+        /* RELÓGIO */
+        #relogio-bloqueio { display: none; color: var(--neon-blue); font-weight: bold; margin-top: 10px; text-align: center; border: 1px solid var(--neon-blue); padding: 10px; border-radius: 5px; background: rgba(255, 215, 0, 0.1); }
 
-        /* ESTILO DO ARTIGO ABERTO */
+        /* ARTIGO */
         .artigo-container img { max-width: 100%; border-radius: 5px; border: 1px solid #333; }
         .artigo-container h2, .artigo-container h3 { color: var(--neon-green); margin-top: 25px; }
         .artigo-container pre { border: 1px solid var(--neon-blue); background: #080808; }
@@ -78,8 +87,25 @@
 </head>
 <body>
 
+    <script>
+        // Função leve para criar confetes sem travar o PC
+        document.addEventListener("DOMContentLoaded", () => {
+            const cores = ['#d600ff', '#ffd700', '#00ff41', '#00f3ff'];
+            const quantidade = 30; // Poucos confetes para não pesar
+
+            for (let i = 0; i < quantidade; i++) {
+                const confete = document.createElement('div');
+                confete.classList.add('confete');
+                confete.style.left = Math.random() * 100 + 'vw';
+                confete.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Velocidade aleatória
+                confete.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                document.body.appendChild(confete);
+            }
+        });
+    </script>
+
     <nav class="cyber-nav">
-        <span style="color: var(--neon-green); font-weight:bold; letter-spacing: 1px;">LINUX LAB_</span>
+        <span style="color: var(--neon-green); font-weight:bold; letter-spacing: 1px;">LINUX FOLIA_ 🎭</span>
         <div>
             <a onclick="navegar('home')">HOME</a>
             <a onclick="navegar('sobre')">SOBRE</a>
@@ -89,35 +115,35 @@
     <div id="tela-home" class="tela fade-in container">
         <header style="text-align: center; margin-bottom: 40px;">
             <h1 style="color: #fff; margin:0">> SYSTEM LOGS</h1>
-            <p style="color: #666;">Hardware • Otimização • Games</p>
+            <p style="color: var(--neon-blue);">🎉 Edição Especial de Carnaval 🎉</p>
         </header>
         
         <div id="lista-posts">
             <div style="text-align: center; margin-top: 50px;">
-                <p style="color: var(--neon-green)">CONECTANDO AO BANCO DE DADOS...</p>
+                <p style="color: var(--neon-green)">CONECTANDO AO BLOCO DE DADOS...</p>
                 <progress></progress>
             </div>
         </div>
 
         <footer style="text-align: center; opacity: 0.5; font-size: 0.8em; margin-top: 50px;">
-            DEV: DANILO • STATUS: ONLINE
+            DEV: DANILO • STATUS: FESTA 🎊
         </footer>
     </div>
 
     <div id="tela-sobre" class="tela fade-in container">
         <h2 style="color: var(--neon-blue)">SOBRE O PROJETO</h2>
-        <p>Bem-vindo ao <strong>Linux Lab</strong>. Este blog é mantido por Danilo, com foco em provar que hardware antigo ainda tem valor se usado com o software correto (Linux Mint).</p>
+        <p>Bem-vindo ao <strong>Linux Lab</strong>. Este blog é mantido por Danilo, provando que hardware antigo roda liso até no Carnaval.</p>
         
         <div class="caixa-sugestao">
-            <h4 style="color: var(--neon-blue)">💡 CENTRAL DE IDEIAS</h4>
-            <p style="color: #ccc; font-size: 0.9em;">Tem uma dica ou quer pedir um artigo? Envie aqui.<br><small>(Anti-Flood: 1 ideia a cada 72h)</small></p>
+            <h4 style="color: var(--neon-green)">💡 CENTRAL DE IDEIAS</h4>
+            <p style="color: #ccc; font-size: 0.9em;">Tem uma dica? Envie aqui.<br><small>(Anti-Flood: 1 ideia a cada 72h)</small></p>
             
-            <textarea id="texto-sugestao" rows="4" placeholder="Ex: Faz um tutorial sobre ZRam..."></textarea>
+            <textarea id="texto-sugestao" rows="4" placeholder="Ex: Faz um post sobre jogos de ritmo..."></textarea>
             
             <button onclick="enviarSugestao()" class="contrast" id="btn-sugestao" style="width: 100%;">ENVIAR IDEIA 🚀</button>
             
             <div id="relogio-bloqueio">
-                ⏳ Aguarde <span id="tempo-restante">00h 00m 00s</span> para enviar novamente.
+                ⏳ Aguarde <span id="tempo-restante">00h 00m 00s</span>
             </div>
 
             <p id="msg-sugestao" style="margin-top:15px; font-weight:bold; text-align: center;"></p>
@@ -125,17 +151,17 @@
     </div>
 
     <div id="tela-leitura" class="tela fade-in container">
-        <nav><a onclick="navegar('home')" style="color: var(--neon-green); cursor:pointer; text-decoration: underline;">[ ← Voltar para Lista ]</a></nav>
+        <nav><a onclick="navegar('home')" style="color: var(--neon-green); cursor:pointer; text-decoration: underline;">[ ← Voltar para o Bloco ]</a></nav>
         
         <article id="conteudo-artigo" class="artigo-container" style="border: 1px solid #333; padding: 25px; border-radius: 8px; background: #111; margin-top:20px;">
             </article>
 
         <div style="margin-top: 30px; text-align: center; border-top: 1px solid #333; padding-top: 30px;">
-            <p style="margin-bottom: 15px;">Este artigo foi útil?</p>
+            <p style="margin-bottom: 15px;">Curtiu?</p>
             <button id="btn-curtir" class="btn-like" onclick="curtirAtual()">
                 🤍 Carregando...
             </button>
-            <p style="font-size: 0.8em; color: #555; margin-top: 10px;">(Limite: 1 like por pessoa)</p>
+            <p style="font-size: 0.8em; color: #555; margin-top: 10px;">(Limite: 1 like por folião)</p>
         </div>
         
         <footer style="margin-top: 50px; text-align: center;">
@@ -147,7 +173,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // --- 1. CONFIGURAÇÃO (SUAS CHAVES) ---
+        // --- CONFIGURAÇÃO ---
         const firebaseConfig = {
             apiKey: "AIzaSyDnkmZ7BMasKQQGnAQSTi3jxiuCbxyLU7M",
             authDomain: "meubloglinux.firebaseapp.com",
@@ -156,25 +182,17 @@
             messagingSenderId: "262696388382",
             appId: "1:262696388382:web:d2784dc5dbba922cc8eb0f"
         };
-        
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
         let TODOS_POSTS = {}; 
         let ID_POST_ATUAL = null;
-        let INTERVALO_RELOGIO = null; // Para controlar o timer
+        let INTERVALO_RELOGIO = null;
 
-        // --- 2. CARREGAR POSTS (TEMPO REAL) ---
+        // --- CARREGAR POSTS ---
         db.collection("posts").orderBy("data", "desc").onSnapshot((snapshot) => {
             const listaDiv = document.getElementById('lista-posts');
-            
-            if(snapshot.empty) { 
-                listaDiv.innerHTML = "<p style='text-align:center; padding: 50px;'>Nenhum artigo publicado ainda.</p>"; 
-                TODOS_POSTS = {};
-                return; 
-            }
+            if(snapshot.empty) { listaDiv.innerHTML = "<p style='text-align:center; padding: 50px;'>O bloco ainda não saiu (sem posts).</p>"; return; }
 
             listaDiv.innerHTML = "";
             TODOS_POSTS = {};
@@ -187,186 +205,116 @@
                 listaDiv.innerHTML += `
                     <div class="card-post" onclick="abrirArtigo('${doc.id}')" style="cursor: pointer;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
-                            <small style="color:#666">${new Date(post.data).toLocaleDateString('pt-BR')}</small>
-                            <small style="color: var(--neon-green)">❤️ ${likes}</small>
+                            <small style="color:#aaa">${new Date(post.data).toLocaleDateString('pt-BR')}</small>
+                            <small style="color: var(--neon-blue)">🎭 ${likes}</small>
                         </div>
                         <h3 style="margin: 0; color: #fff;">${post.titulo}</h3>
-                        <p style="color: #888; font-size: 0.9em; margin-top: 10px;">Toque para ler a análise completa...</p>
-                        <button style="margin-top:10px; font-size: 0.8em; padding: 5px 15px;">ACESSAR</button>
+                        <p style="color: #888; font-size: 0.9em; margin-top: 10px;">Toque para ler...</p>
+                        <button style="margin-top:10px; font-size: 0.8em; padding: 5px 15px; border-color: var(--neon-blue); color: var(--neon-blue);">ACESSAR</button>
                     </div>
                 `;
             });
             checarRota();
         });
 
-        // --- 3. NAVEGAÇÃO E ROTAS ---
+        // --- NAVEGAÇÃO ---
         function navegar(destino) {
             document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
-            
             if (destino === 'home') {
                 document.getElementById('tela-home').style.display = 'block';
-                location.hash = '';
-                window.scrollTo(0,0);
+                location.hash = ''; window.scrollTo(0,0);
             } else if (destino === 'sobre') {
                 document.getElementById('tela-sobre').style.display = 'block';
-                location.hash = 'sobre';
-                window.scrollTo(0,0);
-                iniciarRelogioBloqueio(); // Inicia a verificação do relógio ao entrar na tela
+                location.hash = 'sobre'; window.scrollTo(0,0);
+                iniciarRelogioBloqueio();
             }
         }
-
-        function abrirArtigo(id) {
-            location.hash = id;
-        }
-
+        function abrirArtigo(id) { location.hash = id; }
+        
         function checarRota() {
             const hash = location.hash.replace('#', '');
-            
-            if (hash === 'sobre') {
-                navegar('sobre');
-            } else if (hash && TODOS_POSTS[hash]) {
+            if (hash === 'sobre') { navegar('sobre'); }
+            else if (hash && TODOS_POSTS[hash]) {
                 ID_POST_ATUAL = hash;
                 const post = TODOS_POSTS[hash];
                 const likes = post.likes ? post.likes : 0;
-
-                document.getElementById('conteudo-artigo').innerHTML = `
-                    <h1 style="color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 15px;">${post.titulo}</h1>
-                    ${post.conteudo}
-                `;
-                
+                document.getElementById('conteudo-artigo').innerHTML = `<h1 style="color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 15px;">${post.titulo}</h1>${post.conteudo}`;
                 configurarBotaoLike(likes);
-
                 document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
                 document.getElementById('tela-leitura').style.display = 'block';
                 window.scrollTo(0,0);
-            } else {
-                if(location.hash !== '#sobre') navegar('home');
-            }
+            } else { if(location.hash !== '#sobre') navegar('home'); }
         }
         window.addEventListener('hashchange', checarRota);
 
-        // --- 4. SISTEMA DE LIKES ---
+        // --- LIKES ---
         function configurarBotaoLike(likes) {
             const btnLike = document.getElementById('btn-curtir');
             if (localStorage.getItem('like_' + ID_POST_ATUAL)) {
                 btnLike.classList.add('curtido');
-                btnLike.innerHTML = `❤️ ${likes} (Você curtiu)`;
+                btnLike.innerHTML = `🎭 ${likes} (Você curtiu)`;
                 btnLike.style.cursor = "default";
             } else {
                 btnLike.classList.remove('curtido');
-                btnLike.innerHTML = `🤍 Curtir (${likes})`;
-                btnLike.style.cursor = "pointer";
-                btnLike.disabled = false;
+                btnLike.innerHTML = `🎊 Curtir (${likes})`;
+                btnLike.style.cursor = "pointer"; btnLike.disabled = false;
             }
         }
-
         function curtirAtual() {
             if (!ID_POST_ATUAL) return;
-
-            if (localStorage.getItem('like_' + ID_POST_ATUAL)) {
-                alert("Você já curtiu este artigo! Obrigado.");
-                return;
-            }
-
-            const btn = document.getElementById('btn-curtir');
-            btn.innerHTML = "Processando...";
+            if (localStorage.getItem('like_' + ID_POST_ATUAL)) { alert("Você já curtiu!"); return; }
             
+            const btn = document.getElementById('btn-curtir');
+            btn.innerHTML = "Sambando...";
             const incremento = firebase.firestore.FieldValue.increment(1);
-
             db.collection("posts").doc(ID_POST_ATUAL).set({ likes: incremento }, { merge: true })
-            .then(() => {
-                localStorage.setItem('like_' + ID_POST_ATUAL, 'true');
-                btn.classList.add('curtido');
-            })
-            .catch((error) => {
-                console.error("Erro:", error);
-                alert("Erro ao curtir. Tente novamente.");
-            });
+            .then(() => { localStorage.setItem('like_' + ID_POST_ATUAL, 'true'); btn.classList.add('curtido'); })
+            .catch((error) => { console.error(error); alert("Erro ao curtir."); });
         }
 
-        // --- 5. SISTEMA DE SUGESTÕES COM RELÓGIO ---
-        
+        // --- IDEIAS & RELÓGIO ---
         function iniciarRelogioBloqueio() {
             const ultimaVez = localStorage.getItem('ultima_sugestao');
             const btn = document.getElementById('btn-sugestao');
             const caixaRelogio = document.getElementById('relogio-bloqueio');
             const textoRelogio = document.getElementById('tempo-restante');
-            
-            // Se não tem timer, garante que está tudo limpo
             if (INTERVALO_RELOGIO) clearInterval(INTERVALO_RELOGIO);
-
-            if (!ultimaVez) return; // Nunca enviou, deixa liberado
+            if (!ultimaVez) return;
 
             INTERVALO_RELOGIO = setInterval(() => {
                 const agora = Date.now();
-                const limite = 259200000; // 72 horas em milissegundos
+                const limite = 259200000; 
                 const tempoPassado = agora - ultimaVez;
-                
                 if (tempoPassado < limite) {
-                    // ESTÁ BLOQUEADO: Calcula o tempo que falta
                     const tempoRestante = limite - tempoPassado;
-                    
                     const horas = Math.floor((tempoRestante / (1000 * 60 * 60)));
                     const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
                     const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
-
-                    // Atualiza a tela
-                    btn.disabled = true;
-                    btn.innerText = "BLOQUEADO TEMPORARIAMENTE";
-                    btn.style.opacity = "0.5";
-                    btn.style.cursor = "not-allowed";
-                    
-                    caixaRelogio.style.display = "block";
-                    textoRelogio.innerText = `${horas}h ${minutos}m ${segundos}s`;
+                    btn.disabled = true; btn.innerText = "BLOQUEADO (FOLIÃO ACELERADO)"; btn.style.opacity = "0.5";
+                    caixaRelogio.style.display = "block"; textoRelogio.innerText = `${horas}h ${minutos}m ${segundos}s`;
                 } else {
-                    // JÁ LIBEROU
-                    btn.disabled = false;
-                    btn.innerText = "ENVIAR IDEIA 🚀";
-                    btn.style.opacity = "1";
-                    btn.style.cursor = "pointer";
-                    caixaRelogio.style.display = "none";
-                    clearInterval(INTERVALO_RELOGIO);
+                    btn.disabled = false; btn.innerText = "ENVIAR IDEIA 🚀"; btn.style.opacity = "1";
+                    caixaRelogio.style.display = "none"; clearInterval(INTERVALO_RELOGIO);
                 }
-            }, 1000); // Roda a cada 1 segundo
+            }, 1000);
         }
-
         function enviarSugestao() {
             const texto = document.getElementById('texto-sugestao').value;
             const msg = document.getElementById('msg-sugestao');
             const btn = document.getElementById('btn-sugestao');
-
-            if (!texto) { alert("A caixa está vazia!"); return; }
-
-            // Verificação Rápida antes de enviar
+            if (!texto) { alert("Escreva algo!"); return; }
             const ultimaVez = localStorage.getItem('ultima_sugestao');
             const agora = Date.now();
-            const limite = 259200000;
-
-            if (ultimaVez && (agora - ultimaVez) < limite) {
-                alert("Aguarde o tempo acabar!");
-                return;
-            }
+            if (ultimaVez && (agora - ultimaVez) < 259200000) { alert("Aguarde o tempo!"); return; }
 
             btn.setAttribute('aria-busy', 'true');
-            btn.innerText = "ENVIANDO...";
-            
-            db.collection("sugestoes").add({
-                texto: texto,
-                data: agora,
-                status: "nova"
-            }).then(() => {
+            db.collection("sugestoes").add({ texto: texto, data: agora, status: "nova" })
+            .then(() => {
                 localStorage.setItem('ultima_sugestao', agora);
                 document.getElementById('texto-sugestao').value = "";
-                msg.innerText = "✅ Ideia enviada! O relógio começou a contar.";
-                msg.style.color = "#00ff41";
-                btn.setAttribute('aria-busy', 'false');
-                iniciarRelogioBloqueio(); // Inicia o timer imediatamente
-            })
-            .catch(err => {
-                msg.innerText = "Erro ao enviar: " + err.message;
-                msg.style.color = "red";
-                btn.setAttribute('aria-busy', 'false');
-            });
+                msg.innerText = "✅ Ideia enviada! Bom carnaval!"; msg.style.color = "var(--neon-green)";
+                btn.setAttribute('aria-busy', 'false'); iniciarRelogioBloqueio();
+            }).catch(err => { msg.innerText = "Erro."; btn.setAttribute('aria-busy', 'false'); });
         }
     </script>
 </body>
