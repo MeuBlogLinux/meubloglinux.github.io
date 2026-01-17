@@ -97,7 +97,7 @@
         <main class="container">
             <article>
                 <header><small style="color:#666">HARDWARE_LOG</small><h3>Recuperando PC Antigo</h3></header>
-                <p>Como o Linux Mint ressuscitou meu Athlon II X2.</p>
+                <p>Como salvei um PC antigo com Linux Mint. Se o seu PC tem 4GB de RAM, o Windows está matando ele.</p>
                 <footer>
                     <button onclick="location.hash='linux'">Acessar Arquivos</button>
                 </footer>
@@ -105,14 +105,14 @@
 
             <article>
                 <header><small style="color:#666">GAME_LOG</small><h3>Minecraft Otimizado</h3></header>
-                <p>Configuração de 2018MB para rodar liso.</p>
+                <p>Configuração exata para rodar a última versão sem placa de vídeo.</p>
                 <footer>
                     <button onclick="location.hash='minecraft'" class="contrast">Acessar Config</button>
                 </footer>
             </article>
 
             <footer style="text-align: center; margin-top: 40px; opacity: 0.5; font-size: 0.8em;">
-                SYSTEM STATUS: ONLINE<br>DEV: DANIEL
+                SYSTEM STATUS: ONLINE<br>DEV: DANILO
             </footer>
         </main>
     </div>
@@ -121,26 +121,66 @@
         <nav><ul><li><a href="#" onclick="location.hash=''" style="color: var(--neon-green)">[ Voltar para Base ]</a></li></ul></nav>
 
         <article>
-            <h2 style="color: var(--neon-green)">Linux Mint vs PC Antigo</h2>
-            <p>Se você tem um computador de 10 anos atrás, o Windows é o problema.</p>
+            <h2 style="color: var(--neon-green)">Como salvei meu PC antigo com Linux Mint</h2>
+            <p><strong>Por:</strong> Danilo • <strong>Data:</strong> 17/01/2026</p>
+            <p><em>Hardware testado: AMD Athlon II X2 + 4GB de RAM</em></p>
 
-            <h3>O Resultado</h3>
-            <table role="grid">
-                <thead>
-                    <tr><th>Sistema</th><th>RAM Inicial</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Windows 10</td><td style="color: red">2.4 GB</td></tr>
-                    <tr><td>Linux Mint</td><td style="color: var(--neon-green)">600 MB - 900 MB</td></tr>
-                </tbody>
-            </table>
+            <p>Se você, assim como eu, tem um computador que já foi considerado bom há 10 anos, mas hoje sofre para abrir um vídeo no YouTube, esse artigo é para você. Muita gente joga essas máquinas no lixo, mas eu provei que elas ainda têm salvação.</p>
 
-            <h3>Comando Essencial</h3>
-            <p>Instale programas via Flatpak para evitar vírus:</p>
+            <h3>1. O Problema: Windows em Hardware Antigo</h3>
+            <p>O Windows 10 e 11 são sistemas pesados. Eles rodam centenas de processos em segundo plano (telemetria, atualizações, antivírus) que "comem" o processador e a memória RAM.</p>
+            <p>No meu Athlon II X2, a situação era triste:</p>
+            <ul>
+                <li><strong>Boot Lento:</strong> O PC demorava minutos para ficar usável.</li>
+                <li><strong>RAM Esgotada:</strong> Só de ligar, o sistema já consumia 2.5GB dos meus 4GB disponíveis.</li>
+                <li><strong>Travamentos:</strong> Abrir o navegador e o Discord ao mesmo tempo? Nem pensar.</li>
+            </ul>
+
+            <h3>2. A Solução: Linux Mint (XFCE ou Cinnamon)</h3>
+            <p>Decidi remover o Windows e instalar o <strong>Linux Mint</strong>. A diferença não foi pouca, foi brutal. O Linux gerencia a memória de forma muito mais inteligente.</p>
+
+            <blockquote>
+                "Enquanto o Windows trata 4GB de RAM como o mínimo aceitável, o Linux trata como luxo."
+            </blockquote>
+
+            <h3>3. O Resultado Prático (Comparação)</h3>
+            <figure>
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th scope="col">Métrica</th>
+                            <th scope="col">Windows 10</th>
+                            <th scope="col">Linux Mint</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">RAM em Repouso</th>
+                            <td style="color: red">2.4 GB</td>
+                            <td style="color: var(--neon-green)">600 MB - 900 MB</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Navegador</th>
+                            <td>Lento / Travando</td>
+                            <td>Fluido (3 abas)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Ventoinha (Cooler)</th>
+                            <td>Turbina de avião ✈️</td>
+                            <td>Silencioso 🤫</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+
+            <h3>4. Instalação de Programas (Sem vírus)</h3>
+            <p>Para configurar meu ambiente de desenvolvimento web, usei apenas um comando no terminal para instalar o Sublime Text via Flatpak:</p>
             <pre><code style="color: var(--neon-blue)">flatpak install flathub com.sublimetext.three</code></pre>
+            <p>É rápido, seguro e sem aquelas barrinhas de navegador indesejadas.</p>
 
             <footer>
-                <button onclick="location.hash=''">Voltar</button>
+                <hr style="border-color: #333">
+                <button onclick="location.hash=''">Voltar ao Menu</button>
             </footer>
         </article>
     </div>
@@ -148,24 +188,34 @@
     <div id="minecraft" class="tela fade-in container" style="margin-top: 20px;">
         <nav><ul><li><a href="#" onclick="location.hash=''" style="color: var(--neon-blue)">[ Voltar para Base ]</a></li></ul></nav>
 
-        <article style="border-color: var(--neon-blue);">
-            <h2 style="color: var(--neon-blue)">Minecraft 1.21 Vanilla</h2>
-            
-            <p>O segredo para não travar em 4GB de RAM é a matemática.</p>
+        <article style="border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);">
+            <h2 style="color: var(--neon-blue)">Minecraft 1.21 Vanilla em PC de 4GB</h2>
+            <p><strong>Meta:</strong> 60 FPS Estável • <strong>Sistema:</strong> Linux Mint</p>
 
-            <h3>Alocação de RAM</h3>
-            <p>No TLauncher, use exatos:</p>
+            <p>Muita gente diz que é impossível jogar as versões novas do Minecraft em PC antigo sem placa de vídeo. Eu provei que estão errados.</p>
+
+            <h3>O Segredo: A Alocação de Memória</h3>
+            <p>O maior erro é colocar memória demais ou de menos. Se você tem 4GB no total, não pode colocar 3GB pro jogo, senão o sistema trava porque falta RAM para o Linux.</p>
+
+            <p>No meu TLauncher, cheguei no <strong>Número Mágico</strong>:</p>
             <p class="destaque" style="color: var(--neon-blue)">2018 MB</p>
+            <p>Isso deixa quase 2GB livres para o Linux Mint manter o áudio e o sistema rodando liso.</p>
 
-            <h3>Gráficos</h3>
+            <h3>Configurações Gráficas (Vanilla Puro)</h3>
+            <p>Eu não usei mods como Sodium ou Optifine. O segredo está no ajuste manual dentro do menu do jogo:</p>
             <ul>
-                <li>Gráficos: <strong>Rápidos (Fast)</strong></li>
-                <li>Chunks: <strong>4 a 6</strong></li>
-                <li>FPS: <strong>Limitado a 60</strong></li>
+                <li>Gráficos: <strong style="color: var(--neon-green)">Rápidos (Fast)</strong></li>
+                <li>Renderização (Chunks): <strong>4 a 6</strong></li>
+                <li>Limite de FPS: <strong>Cravado em 60 FPS</strong></li>
+                <li>Partículas: <strong>Diminuídas (Minimais)</strong></li>
             </ul>
 
+            <h3>Conclusão</h3>
+            <p>Rodando a versão <strong>1.21.11</strong>, consegui estabilidade total. O jogo abre, o mundo carrega e dá para jogar sobrevivência tranquilo.</p>
+
             <footer>
-                <button onclick="location.hash=''" class="contrast">Voltar</button>
+                <hr style="border-color: #333">
+                <button onclick="location.hash=''" class="contrast">Voltar ao Menu</button>
             </footer>
         </article>
     </div>
