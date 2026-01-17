@@ -11,87 +11,100 @@
     
     <style>
         /* --- ESTILO CYBERPUNK --- */
-        :root { --background-body: #050505; --neon-green: #00ff41; --neon-blue: #00f3ff; --card-bg: #111; --font-main: 'Fira Code', monospace; }
-        
-        body { background-color: var(--background-body); font-family: var(--font-main); color: #ddd; }
+        :root { --bg: #050505; --neon-green: #00ff41; --neon-blue: #00f3ff; --card-bg: #111; --font: 'Fira Code', monospace; }
+        body { background-color: var(--bg); font-family: var(--font); color: #ddd; padding-top: 60px; }
 
-        /* Banner */
-        .cyber-banner {
-            background: linear-gradient(180deg, #000 0%, #111 100%);
-            padding: 30px 20px; text-align: center;
-            border-bottom: 2px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1); margin-bottom: 30px;
+        /* HEADER FIXO */
+        .cyber-nav {
+            position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid var(--neon-green); padding: 10px 20px; z-index: 999;
+            display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(5px);
         }
+        .cyber-nav a { color: var(--neon-green); text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; }
+        .cyber-nav a:hover { color: #fff; text-shadow: 0 0 10px var(--neon-green); }
 
-        /* Cards da Lista */
+        /* CARDS */
         .card-post {
-            background-color: var(--card-bg);
-            border: 1px solid #333;
-            border-left: 3px solid var(--neon-green);
-            border-radius: 8px; margin-bottom: 25px; padding: 20px;
-            transition: 0.2s;
+            background-color: var(--card-bg); border: 1px solid #333; border-left: 3px solid var(--neon-green);
+            border-radius: 8px; margin-bottom: 25px; padding: 20px; transition: 0.2s;
         }
         .card-post:hover { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0,255,65,0.1); }
 
-        /* Botões */
-        button { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); font-weight: bold; text-transform: uppercase; }
-        button:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
-        
-        button.contrast { border-color: var(--neon-blue); color: var(--neon-blue); }
-        button.contrast:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+        /* BOTÃO DE CURTIR */
+        .btn-like {
+            background: #1a1a1a; border: 1px solid #333; color: #666; 
+            padding: 5px 15px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-like.curtido {
+            border-color: #ff0041; color: #ff0041; background: rgba(255,0,65,0.1);
+        }
+        .btn-like:hover { transform: scale(1.05); }
 
-        /* Estilos do Artigo Aberto */
-        .conteudo-leitura h2, .conteudo-leitura h3 { color: var(--neon-green); margin-top: 20px; }
-        .conteudo-leitura table { border: 1px solid #333; }
-        .conteudo-leitura pre { background: #080808; border: 1px solid var(--neon-blue); }
-        
-        /* Sistema de Telas (SPA) */
-        .tela { display: none; } /* Tudo começa escondido */
+        /* TELAS E ANIMAÇÃO */
+        .tela { display: none; padding-top: 20px; }
         .fade-in { animation: entrar 0.3s ease-out; }
         @keyframes entrar { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ESTILO DO SOBRE */
+        .caixa-sugestao { border: 1px dashed var(--neon-blue); padding: 20px; border-radius: 8px; margin-top: 30px; }
+        textarea { background: #000 !important; border-color: #333 !important; color: #fff !important; }
     </style>
 </head>
 <body>
 
-    <div id="tela-home" class="tela fade-in">
-        <div class="cyber-banner">
-            <h1 style="color: #fff; margin:0">LINUX LAB_</h1>
-            <p style="color: var(--neon-blue); margin:0;">> Otimização Extrema (Dev: Danilo)</p>
+    <nav class="cyber-nav">
+        <span style="color: #fff; font-weight:bold;">LINUX LAB_</span>
+        <div>
+            <a onclick="navegar('home')">HOME</a>
+            <a onclick="navegar('sobre')">SOBRE</a>
         </div>
+    </nav>
 
-        <main class="container" id="lista-posts">
-            <div style="text-align: center; margin-top: 50px;">
-                <p style="color: var(--neon-green)">CARREGANDO DADOS...</p>
-                <progress></progress>
-            </div>
-        </main>
-
-        <footer style="text-align: center; opacity: 0.5; padding: 40px;">
-            SYSTEM STATUS: ONLINE
-        </footer>
+    <div id="tela-home" class="tela fade-in container">
+        <header style="text-align: center; margin-bottom: 40px;">
+            <h1 style="color: var(--neon-green); margin:0">> ARTIGOS RECENTES</h1>
+            <p style="color: #666;">Otimização • Hardware • Games</p>
+        </header>
+        <div id="lista-posts">
+            <p style="text-align: center;">Carregando sistema...</p>
+        </div>
     </div>
 
-    <div id="tela-leitura" class="tela fade-in container" style="margin-top: 20px;">
-        <nav>
-            <ul>
-                <li><a href="#" onclick="fecharArtigo()" style="color: var(--neon-green)">[ Voltar para Base ]</a></li>
-            </ul>
-        </nav>
+    <div id="tela-sobre" class="tela fade-in container">
+        <h2 style="color: var(--neon-blue)">SOBRE O PROJETO</h2>
+        <p>Bem-vindo ao <strong>Linux Lab</strong>. Este blog é mantido por Danilo, com foco em provar que hardware antigo ainda tem valor se usado com o software correto.</p>
+        
+        <div class="caixa-sugestao">
+            <h4 style="color: var(--neon-blue)">💡 CENTRAL DE IDEIAS</h4>
+            <p><small>Tem uma dica? Envie aqui. (Limite: 1 ideia a cada 72h)</small></p>
+            
+            <textarea id="texto-sugestao" rows="3" placeholder="Ex: Adiciona um modo claro, fala sobre SSD..."></textarea>
+            <button onclick="enviarSugestao()" class="contrast" id="btn-sugestao">ENVIAR IDEIA</button>
+            <p id="msg-sugestao" style="margin-top:10px; font-weight:bold;"></p>
+        </div>
+    </div>
 
-        <article id="conteudo-artigo" style="border: 1px solid var(--neon-green); padding: 20px; border-radius: 8px; background: #111;">
+    <div id="tela-leitura" class="tela fade-in container">
+        <nav><a onclick="navegar('home')" style="color: var(--neon-green); cursor:pointer;">[ ← Voltar para Lista ]</a></nav>
+        
+        <article id="conteudo-artigo" style="border: 1px solid #333; padding: 25px; border-radius: 8px; background: #111; margin-top:10px;">
             </article>
 
-        <footer style="margin-top: 30px;">
-            <hr style="border-color: #333">
-            <button onclick="fecharArtigo()">Voltar para Lista</button>
-        </footer>
+        <div style="margin-top: 20px; text-align: center; border-top: 1px solid #333; padding-top: 20px;">
+            <p>Curtiu esse conteúdo?</p>
+            <button id="btn-curtir" class="btn-like" onclick="curtirAtual()">
+                ❤️ <span id="contador-likes">0</span>
+            </button>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // --- 1. CONFIGURAÇÃO ---
+        // CONFIGURAÇÃO
         const firebaseConfig = {
             apiKey: "AIzaSyDnkmZ7BMasKQQGnAQSTi3jxiuCbxyLU7M",
             authDomain: "meubloglinux.firebaseapp.com",
@@ -103,88 +116,160 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Variável global para guardar os posts na memória
         let TODOS_POSTS = {}; 
+        let ID_POST_ATUAL = null;
 
-        // --- 2. BUSCAR DADOS DO FIREBASE ---
-        const listaDiv = document.getElementById('lista-posts');
-
+        // --- 1. CARREGAR POSTS ---
         db.collection("posts").orderBy("data", "desc").onSnapshot((snapshot) => {
-            listaDiv.innerHTML = ""; // Limpa a lista
-            TODOS_POSTS = {}; // Reseta a memória
+            const listaDiv = document.getElementById('lista-posts');
+            listaDiv.innerHTML = "";
+            TODOS_POSTS = {};
 
-            if (snapshot.empty) {
-                listaDiv.innerHTML = "<p style='text-align:center'>Nenhum artigo encontrado.</p>";
-                return;
-            }
+            if(snapshot.empty) { listaDiv.innerHTML = "Nada por aqui ainda."; return; }
 
             snapshot.forEach((doc) => {
                 const post = doc.data();
-                TODOS_POSTS[doc.id] = post; // Salva na memória com o ID
+                TODOS_POSTS[doc.id] = post;
+                
+                // Pega curtidas (se não tiver, assume 0)
+                const likes = post.likes || 0;
 
-                // Renderiza o Card na Home
-                // Nota: O botão chama abrirArtigo('ID_DO_POST')
                 listaDiv.innerHTML += `
                     <div class="card-post">
-                        <small style="color:#666">${new Date(post.data).toLocaleDateString('pt-BR')}</small>
+                        <div style="display:flex; justify-content:space-between;">
+                            <small style="color:#666">${new Date(post.data).toLocaleDateString()}</small>
+                            <small>❤️ ${likes}</small>
+                        </div>
                         <h3>${post.titulo}</h3>
-                        <p style="opacity: 0.8; font-size: 0.9em;">Clique para ler a análise completa...</p>
-                        <button onclick="abrirArtigo('${doc.id}')" class="${post.titulo.includes('Minecraft') ? 'contrast' : ''}">ACESSAR ARQUIVO</button>
+                        <button onclick="abrirArtigo('${doc.id}')" style="margin-top:10px; border-color:var(--neon-green); color:var(--neon-green); background:transparent;">LER AGORA</button>
                     </div>
                 `;
             });
-
-            // Se o usuário recarregar a página já com um link de artigo (#id), abre ele
-            checarNavegacao();
+            checarRota();
         });
 
-        // --- 3. SISTEMA DE NAVEGAÇÃO (BOTÃO VOLTAR) ---
-        
-        function abrirArtigo(id) {
-            // Muda o hash da URL (Ex: site.com/#ID_DO_POST)
-            // Isso cria um ponto no histórico do navegador
-            location.hash = id;
-        }
-
-        function fecharArtigo() {
-            // Limpa o hash. Isso dispara o evento 'hashchange'
-            location.hash = "";
-            // Alternativa: history.back() faria o mesmo se o usuário tiver vindo da home
-        }
-
-        // Essa função roda sempre que o link muda (Hash) ou aperta Voltar
-        function checarNavegacao() {
-            const hash = location.hash.replace('#', '');
-            const telaHome = document.getElementById('tela-home');
-            const telaLeitura = document.getElementById('tela-leitura');
-            const conteudoDiv = document.getElementById('conteudo-artigo');
-
-            if (hash && TODOS_POSTS[hash]) {
-                // --- MODO LEITURA ---
-                // 1. Pega os dados da memória
-                const post = TODOS_POSTS[hash];
-                
-                // 2. Preenche o HTML
-                conteudoDiv.innerHTML = `
-                    <h1 style="color: var(--neon-green)">${post.titulo}</h1>
-                    <div class="conteudo-leitura">${post.conteudo}</div>
-                `;
-
-                // 3. Troca as telas
-                telaHome.style.display = 'none';
-                telaLeitura.style.display = 'block';
-                window.scrollTo(0,0);
-
-            } else {
-                // --- MODO HOME (LISTA) ---
-                telaLeitura.style.display = 'none';
-                telaHome.style.display = 'block';
+        // --- 2. NAVEGAÇÃO ---
+        function navegar(destino) {
+            document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+            
+            if (destino === 'home') {
+                document.getElementById('tela-home').style.display = 'block';
+                location.hash = '';
+            } else if (destino === 'sobre') {
+                document.getElementById('tela-sobre').style.display = 'block';
+                location.hash = 'sobre';
             }
         }
 
-        // Ouve o botão voltar do celular
-        window.addEventListener('hashchange', checarNavegacao);
-        
+        function abrirArtigo(id) {
+            location.hash = id;
+        }
+
+        function checarRota() {
+            const hash = location.hash.replace('#', '');
+            
+            if (hash === 'sobre') {
+                navegar('sobre');
+            } else if (hash && TODOS_POSTS[hash]) {
+                // Abre Artigo
+                ID_POST_ATUAL = hash;
+                const post = TODOS_POSTS[hash];
+                const likes = post.likes || 0;
+
+                document.getElementById('conteudo-artigo').innerHTML = `
+                    <h1 style="color: var(--neon-green)">${post.titulo}</h1>
+                    ${post.conteudo}
+                `;
+                
+                // Configura botão de like
+                const btnLike = document.getElementById('btn-curtir');
+                const contador = document.getElementById('contador-likes');
+                contador.innerText = likes;
+
+                // Verifica se já curtiu esse post específico
+                if (localStorage.getItem('like_' + hash)) {
+                    btnLike.classList.add('curtido');
+                    btnLike.disabled = true; // Bloqueia clique
+                    btnLike.style.cursor = "not-allowed";
+                } else {
+                    btnLike.classList.remove('curtido');
+                    btnLike.disabled = false;
+                    btnLike.style.cursor = "pointer";
+                }
+
+                document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+                document.getElementById('tela-leitura').style.display = 'block';
+                window.scrollTo(0,0);
+            } else {
+                navegar('home');
+            }
+        }
+        window.addEventListener('hashchange', checarRota);
+
+        // --- 3. SISTEMA DE LIKES (ANTI-FLOOD) ---
+        function curtirAtual() {
+            if (!ID_POST_ATUAL) return;
+
+            // Bloqueio local (Visual)
+            if (localStorage.getItem('like_' + ID_POST_ATUAL)) {
+                alert("Você já curtiu este artigo!");
+                return;
+            }
+
+            // 1. Marca no navegador que esse usuário curtiu ESSE post
+            localStorage.setItem('like_' + ID_POST_ATUAL, 'true');
+
+            // 2. Atualiza visualmente na hora (pra ficar rápido)
+            const btn = document.getElementById('btn-curtir');
+            const contador = document.getElementById('contador-likes');
+            btn.classList.add('curtido');
+            contador.innerText = parseInt(contador.innerText) + 1;
+            btn.disabled = true;
+
+            // 3. Manda pro Firebase somar +1
+            const incremento = firebase.firestore.FieldValue.increment(1);
+            db.collection("posts").doc(ID_POST_ATUAL).update({ likes: incremento });
+        }
+
+        // --- 4. SISTEMA DE IDEIAS (ANTI-SPAM 72H) ---
+        function enviarSugestao() {
+            const texto = document.getElementById('texto-sugestao').value;
+            const msg = document.getElementById('msg-sugestao');
+            const btn = document.getElementById('btn-sugestao');
+
+            if (!texto) { alert("Escreva algo!"); return; }
+
+            // Verifica tempo (72 horas = 259200000 ms)
+            const ultimaVez = localStorage.getItem('ultima_sugestao');
+            const agora = Date.now();
+            const limite = 259200000; // 72 horas
+
+            if (ultimaVez && (agora - ultimaVez) < limite) {
+                // Calcula quanto tempo falta
+                const horasRestantes = Math.ceil((limite - (agora - ultimaVez)) / 3600000);
+                msg.innerText = `⏳ Calma aí! Você enviou uma dica recentemente. Aguarde ${horasRestantes} horas para enviar outra.`;
+                msg.style.color = "orange";
+                return;
+            }
+
+            // Envia para o Firebase (Cria uma coleção nova 'sugestoes')
+            btn.setAttribute('aria-busy', 'true');
+            db.collection("sugestoes").add({
+                texto: texto,
+                data: agora
+            }).then(() => {
+                // Sucesso
+                localStorage.setItem('ultima_sugestao', agora); // Salva a hora
+                document.getElementById('texto-sugestao').value = "";
+                msg.innerText = "✅ Dica enviada com sucesso! Obrigado pela contribuição.";
+                msg.style.color = "#00ff41";
+                btn.setAttribute('aria-busy', 'false');
+            }).catch(err => {
+                console.error(err);
+                msg.innerText = "Erro ao enviar.";
+                btn.setAttribute('aria-busy', 'false');
+            });
+        }
     </script>
 </body>
 </html>
