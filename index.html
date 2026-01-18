@@ -100,12 +100,18 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cores = ['#d600ff', '#ffd700', '#00ff41', '#00f3ff'];
-            const quantidade = 30;
+            
+            // REDUZI AQUI: De 30 para 15
+            const quantidade = 15; 
+
             for (let i = 0; i < quantidade; i++) {
                 const confete = document.createElement('div');
                 confete.classList.add('confete');
                 confete.style.left = Math.random() * 100 + 'vw';
-                confete.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                // AUMENTEI AQUI: Agora demora entre 5 e 10 segundos para cair (antes era 2 a 5)
+                confete.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                
                 confete.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
                 document.body.appendChild(confete);
             }
@@ -237,7 +243,6 @@
                 `;
             });
             
-            // Só checa a rota DEPOIS de carregar tudo para evitar tela branca ou redirects errados
             checarRota(true);
         });
 
@@ -276,7 +281,6 @@
         function checarRota(isUpdate = false) {
             const hash = location.hash.replace('#', '');
             
-            // SEGURANÇA: Se o Firebase não carregou ainda, NÃO faz nada.
             if (Object.keys(TODOS_POSTS).length === 0 && hash && hash !== 'sobre') {
                 return;
             }
@@ -288,11 +292,9 @@
                 const post = TODOS_POSTS[hash];
                 const likes = post.likes ? post.likes : 0;
                 
-                // Se for um post NOVO ou primeira carga
                 if (ID_POST_ATUAL !== hash) {
                     ID_POST_ATUAL = hash;
                     
-                    // Incrementa View apenas se não viu nessa sessão
                     if (!sessionStorage.getItem('view_registrada_' + hash)) {
                          const incremento = firebase.firestore.FieldValue.increment(1);
                          db.collection("posts").doc(hash).set({ views: incremento }, { merge: true });
@@ -311,7 +313,6 @@
                 configurarBotaoLike(likes);
                 
             } else {
-                // Só volta para home se não achou e já terminou de carregar
                 if(location.hash !== '' && location.hash !== '#sobre') {
                     navegar('home');
                 } else if (location.hash === '') {
