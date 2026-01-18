@@ -38,18 +38,28 @@
         }
         /* FIM DO TEMA */
 
-        /* RELÓGIO FLUTUANTE (VERSÃO MINI) */
+        /* BANNER DE COOKIES (NOVO) */
+        #banner-cookies {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 600px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid var(--neon-blue);
+            padding: 20px; border-radius: 8px;
+            z-index: 10002; /* Fica na frente de tudo */
+            display: none; /* Oculto por padrão, JS ativa */
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            animation: subir 0.5s ease-out;
+        }
+        @keyframes subir { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+        /* RELÓGIO FLUTUANTE (MINI) */
         #relogio-flutuante {
-            position: fixed; bottom: 15px; right: 15px; /* Mais pro cantinho */
+            position: fixed; bottom: 15px; right: 15px;
             background: rgba(0, 0, 0, 0.9);
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
-            
-            /* DIMINUI AQUI */
-            padding: 4px 10px; 
-            font-size: 0.7em; /* Letra menor */
-            border-radius: 4px;
-            
+            padding: 4px 10px; font-size: 0.7em; border-radius: 4px;
             font-family: 'Fira Code', monospace;
             z-index: 10000;
             box-shadow: 0 0 8px rgba(214, 0, 255, 0.15);
@@ -57,8 +67,8 @@
             display: flex; align-items: center; gap: 6px;
         }
         .status-dot {
-            width: 6px; height: 6px; /* Bolinha menor */
-            background-color: #00ff41; /* VERDE AGORA */
+            width: 6px; height: 6px;
+            background-color: #00ff41;
             border-radius: 50%;
             animation: piscar 2s infinite;
         }
@@ -128,6 +138,16 @@
         <span id="hora-sistema">SYS_TIME: --:--</span>
     </div>
 
+    <div id="banner-cookies">
+        <h5 style="color: var(--neon-blue); margin-bottom: 10px;">🍪 PROTOCOLO DE COOKIES</h5>
+        <p style="font-size: 0.9em; margin-bottom: 15px; color: #ccc;">
+            Este sistema armazena dados locais para salvar seus Likes e Preferências. Sem rastreadores chatos, apenas o básico para rodar.
+        </p>
+        <button onclick="aceitarCookies()" style="background: var(--neon-blue); color: #000; border: none; font-weight: bold; width: 100%;">
+            CONFIRMAR ACESSO [OK]
+        </button>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Relógio
@@ -136,6 +156,11 @@
                 const hora = agora.toLocaleTimeString('pt-BR');
                 document.getElementById('hora-sistema').innerText = "SYS_TIME: " + hora;
             }, 1000);
+
+            // Cookies: Verifica se já aceitou
+            if (!localStorage.getItem('cookies_aceitos')) {
+                document.getElementById('banner-cookies').style.display = 'block';
+            }
 
             // Confetes
             const cores = ['#d600ff', '#ffd700', '#00ff41', '#00f3ff'];
@@ -149,6 +174,12 @@
                 document.body.appendChild(confete);
             }
         });
+
+        // Função Aceitar Cookies
+        function aceitarCookies() {
+            localStorage.setItem('cookies_aceitos', 'true');
+            document.getElementById('banner-cookies').style.display = 'none';
+        }
     </script>
 
     <nav class="cyber-nav">
@@ -338,7 +369,6 @@
                 
                 if (ID_POST_ATUAL !== hash) {
                     ID_POST_ATUAL = hash;
-                    // Incrementa View apenas se não viu nessa sessão
                     if (!sessionStorage.getItem('view_registrada_' + hash)) {
                          const incremento = firebase.firestore.FieldValue.increment(1);
                          db.collection("posts").doc(hash).set({ views: incremento }, { merge: true });
