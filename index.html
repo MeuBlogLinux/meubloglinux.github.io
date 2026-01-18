@@ -38,17 +38,19 @@
         }
         /* FIM DO TEMA */
 
-        /* BANNER DE COOKIES (NOVO) */
+        /* BANNER DE COOKIES (VERSÃO MINI) */
         #banner-cookies {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 600px;
+            width: 90%; 
+            max-width: 320px; /* BEM MENOR AGORA */
             background: rgba(0, 0, 0, 0.95);
             border: 1px solid var(--neon-blue);
-            padding: 20px; border-radius: 8px;
-            z-index: 10002; /* Fica na frente de tudo */
-            display: none; /* Oculto por padrão, JS ativa */
+            padding: 15px; /* Menos borda */
+            border-radius: 8px;
+            z-index: 10002; 
+            display: none; 
             text-align: center;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
             animation: subir 0.5s ease-out;
         }
         @keyframes subir { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
@@ -139,12 +141,12 @@
     </div>
 
     <div id="banner-cookies">
-        <h5 style="color: var(--neon-blue); margin-bottom: 10px;">🍪 PROTOCOLO DE COOKIES</h5>
-        <p style="font-size: 0.9em; margin-bottom: 15px; color: #ccc;">
-            Este sistema armazena dados locais para salvar seus Likes e Preferências. Sem rastreadores chatos, apenas o básico para rodar.
+        <h6 style="color: var(--neon-blue); margin-bottom: 5px; font-size: 0.9em;">🍪 COOKIES</h6>
+        <p style="font-size: 0.8em; margin-bottom: 10px; color: #ccc; line-height: 1.2;">
+            Usamos memória local para salvar seus Likes. Sem rastreio chato.
         </p>
-        <button onclick="aceitarCookies()" style="background: var(--neon-blue); color: #000; border: none; font-weight: bold; width: 100%;">
-            CONFIRMAR ACESSO [OK]
+        <button onclick="aceitarCookies()" style="background: var(--neon-blue); color: #000; border: none; font-weight: bold; width: 100%; padding: 5px; font-size: 0.8em;">
+            [OK] ACEITAR
         </button>
     </div>
 
