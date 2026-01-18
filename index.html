@@ -100,12 +100,12 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cores = ['#d600ff', '#ffd700', '#00ff41', '#00f3ff'];
-            const quantidade = 15; // Quantidade reduzida para não travar
+            const quantidade = 15; // Poucos confetes para rodar liso no celular
             for (let i = 0; i < quantidade; i++) {
                 const confete = document.createElement('div');
                 confete.classList.add('confete');
                 confete.style.left = Math.random() * 100 + 'vw';
-                confete.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Mais lento
+                confete.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Velocidade lenta
                 confete.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
                 document.body.appendChild(confete);
             }
@@ -170,6 +170,15 @@
             <button class="outline" onclick="copiarPix()" id="btn-pix" style="width: 100%; border-color: var(--neon-blue); color: var(--neon-blue);">
                 <span id="texto-pix">💠 Copiar Chave Pix</span>
             </button>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center; border-top: 1px solid #333; padding-top: 20px;">
+            <p style="color: #aaa; font-size: 0.9em; margin-bottom: 5px;">
+                Dúvidas, parcerias ou bugs? Mande um salve:
+            </p>
+            <a href="mailto:pixlinuxblog@gmail.com" style="color: var(--neon-blue); font-weight: bold; text-decoration: none; font-size: 1.1em;">
+                ✉️ pixlinuxblog@gmail.com
+            </a>
         </div>
     </div>
 
@@ -312,7 +321,7 @@
         }
         window.addEventListener('hashchange', () => checarRota(false));
 
-        // --- LIKES E PIX ---
+        // --- LIKES ---
         function configurarBotaoLike(likes) {
             const btnLike = document.getElementById('btn-curtir');
             if (localStorage.getItem('like_' + ID_POST_ATUAL)) {
@@ -336,13 +345,9 @@
             .catch((error) => { console.error(error); alert("Erro ao curtir."); });
         }
 
-        // --- FUNÇÃO DO BOTÃO PIX (MODIFIQUE AQUI!) ---
+        // --- FUNÇÃO DO BOTÃO PIX (ATUALIZADA) ---
         function copiarPix() {
-            // ===============================================
-            // ⚠️ COLOQUE SUA CHAVE ABAIXO DENTRO DAS ASPAS
             const minhaChavePix = "pixlinuxblog@gmail.com"; 
-            // Exemplo: "danilo@email.com" ou "123.456.789-00"
-            // ===============================================
 
             navigator.clipboard.writeText(minhaChavePix).then(() => {
                 const btn = document.getElementById('btn-pix');
@@ -359,7 +364,7 @@
                     texto.innerText = original;
                 }, 4000);
             }).catch(err => {
-                alert("Não foi possível copiar automaticamente. Minha chave é: " + minhaChavePix);
+                alert("Não foi possível copiar. A chave é: " + minhaChavePix);
             });
         }
 
