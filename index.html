@@ -48,26 +48,14 @@
         .cyber-nav a { color: #fff; text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .cyber-nav a:hover { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
 
-        /* BUSCA (NOVO) */
-        .busca-container {
-            margin-bottom: 30px;
-            position: relative;
-        }
+        /* BUSCA */
+        .busca-container { margin-bottom: 30px; position: relative; }
         #input-busca {
-            background: #0a0a0a !important;
-            border: 1px solid #333 !important;
-            color: #fff !important;
-            padding-left: 40px;
-            border-radius: 30px;
-            transition: 0.3s;
+            background: #0a0a0a !important; border: 1px solid #333 !important; color: #fff !important;
+            padding-left: 40px; border-radius: 30px; transition: 0.3s;
         }
-        #input-busca:focus {
-            border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-        .icone-busca {
-            position: absolute; left: 15px; top: 12px; color: #666;
-        }
+        #input-busca:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .icone-busca { position: absolute; left: 15px; top: 12px; color: #666; }
 
         /* CARDS (LISTA DE POSTS) */
         .card-post {
@@ -75,6 +63,10 @@
             border-radius: 6px; margin-bottom: 25px; padding: 20px; transition: 0.2s;
         }
         .card-post:hover { border-color: var(--neon-blue); transform: translateX(5px); }
+
+        /* INFO BAR (Likes e Views) */
+        .info-bar { display: flex; gap: 15px; font-size: 0.85em; }
+        .info-item { display: flex; align-items: center; gap: 5px; }
 
         /* BOTÃO DE CURTIR */
         .btn-like {
@@ -95,8 +87,6 @@
         /* ESTILO DO SOBRE */
         .caixa-sugestao { border: 1px dashed var(--neon-blue); padding: 25px; border-radius: 8px; margin-top: 30px; background: #0a0a0a; }
         textarea { background: #000 !important; border-color: #333 !important; color: #fff !important; }
-        
-        /* RELÓGIO */
         #relogio-bloqueio { display: none; color: var(--neon-blue); font-weight: bold; margin-top: 10px; text-align: center; border: 1px solid var(--neon-blue); padding: 10px; border-radius: 5px; background: rgba(255, 215, 0, 0.1); }
 
         /* ARTIGO */
@@ -143,7 +133,7 @@
         
         <div id="lista-posts">
             <div style="text-align: center; margin-top: 50px;">
-                <p style="color: var(--neon-green)">CONECTANDO AO BLOCO DE DADOS...</p>
+                <p style="color: var(--neon-green)">CARREGANDO DADOS...</p>
                 <progress></progress>
             </div>
         </div>
@@ -224,13 +214,16 @@
                 const post = doc.data();
                 TODOS_POSTS[doc.id] = post;
                 const likes = post.likes ? post.likes : 0;
+                const views = post.views ? post.views : 0; // Pega as views ou 0
 
-                // Adicionei a classe 'titulo-post' para facilitar a busca
                 listaDiv.innerHTML += `
                     <div class="card-post" onclick="abrirArtigo('${doc.id}')" style="cursor: pointer;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
                             <small style="color:#aaa">${new Date(post.data).toLocaleDateString('pt-BR')}</small>
-                            <small style="color: var(--neon-blue)">🎭 ${likes}</small>
+                            <div class="info-bar">
+                                <span class="info-item" style="color: var(--neon-blue)">🎭 ${likes}</span>
+                                <span class="info-item" style="color: #fff">👁️ ${views}</span>
+                            </div>
                         </div>
                         <h3 class="titulo-post" style="margin: 0; color: #fff;">${post.titulo}</h3>
                         <p style="color: #888; font-size: 0.9em; margin-top: 10px;">Toque para ler...</p>
@@ -241,23 +234,18 @@
             checarRota();
         });
 
-        // --- FUNÇÃO DE BUSCA (NOVO) ---
+        // --- FUNÇÃO DE BUSCA ---
         function filtrarPosts() {
             const termo = document.getElementById('input-busca').value.toLowerCase();
             const cards = document.getElementsByClassName('card-post');
-
             for (let i = 0; i < cards.length; i++) {
                 const titulo = cards[i].getElementsByClassName('titulo-post')[0].innerText.toLowerCase();
-                
-                if (titulo.includes(termo)) {
-                    cards[i].style.display = "block"; // Mostra
-                } else {
-                    cards[i].style.display = "none";  // Esconde
-                }
+                if (titulo.includes(termo)) cards[i].style.display = "block";
+                else cards[i].style.display = "none";
             }
         }
 
-        // --- NAVEGAÇÃO ---
+        // --- NAVEGAÇÃO E CONTADOR DE VIEWS ---
         function navegar(destino) {
             document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
             if (destino === 'home') {
@@ -278,6 +266,16 @@
                 ID_POST_ATUAL = hash;
                 const post = TODOS_POSTS[hash];
                 const likes = post.likes ? post.likes : 0;
+                
+                // --- NOVA LÓGICA DE VIEWS (INCREMENTA +1) ---
+                // Verifica se já contou nesta sessão para não flodar
+                if (!sessionStorage.getItem('view_registrada_' + ID_POST_ATUAL)) {
+                     const incremento = firebase.firestore.FieldValue.increment(1);
+                     db.collection("posts").doc(ID_POST_ATUAL).set({ views: incremento }, { merge: true });
+                     sessionStorage.setItem('view_registrada_' + ID_POST_ATUAL, 'true');
+                     console.log("Visualização contabilizada!");
+                }
+
                 document.getElementById('conteudo-artigo').innerHTML = `<h1 style="color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 15px;">${post.titulo}</h1>${post.conteudo}`;
                 configurarBotaoLike(likes);
                 document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
@@ -303,7 +301,6 @@
         function curtirAtual() {
             if (!ID_POST_ATUAL) return;
             if (localStorage.getItem('like_' + ID_POST_ATUAL)) { alert("Você já curtiu!"); return; }
-            
             const btn = document.getElementById('btn-curtir');
             btn.innerHTML = "Sambando...";
             const incremento = firebase.firestore.FieldValue.increment(1);
