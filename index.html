@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- ESTILO CYBERPUNK (Mantido) --- */
+        /* --- ESTILO GERAL --- */
         :root { --bg: #050505; --panel: #111; --text: #eee; --neon-green: #00ff41; --neon-purple: #9d00ff; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 80px; }
         
@@ -26,17 +26,52 @@
         .card h2 { color: #fff; font-size: 1.2rem; margin-bottom: 5px; }
         .card span { font-size: 0.8rem; color: var(--neon-purple); display: block; margin-bottom: 5px; }
 
+        /* Leitura e Conteúdo */
         #leitura-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow-y: auto; z-index: 100; padding: 20px; box-sizing: border-box; }
         .btn-voltar { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 10px 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px; display: inline-block; }
         #conteudo-post h2 { color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 10px; }
         #conteudo-post p { line-height: 1.6; color: #ccc; margin-bottom: 15px; }
-        /* Estilo para código dentro dos posts */
         pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #333; color: var(--neon-green); }
 
+        /* Botão Pix */
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); cursor: pointer; border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
         #loading { text-align: center; color: var(--neon-purple); margin-top: 50px; display: none; font-size: 1.2rem; }
+
+        /* --- NOVO: BARRA DE COOKIES --- */
+        #cookie-banner {
+            display: none; /* Começa escondido, o JS decide se mostra */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background-color: #000;
+            border: 1px solid var(--neon-green);
+            padding: 20px;
+            z-index: 200;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        #cookie-banner p { margin-bottom: 15px; font-size: 0.9rem; }
+        
+        .cookie-btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+        
+        .btn-accept { background: var(--neon-green); color: #000; }
+        .btn-deny { background: transparent; border: 1px solid #555; color: #aaa; }
+        .btn-deny:hover { color: #fff; border-color: #fff; }
+
     </style>
 </head>
 <body>
@@ -58,6 +93,12 @@
     </div>
 
     <button class="btn-pix" onclick="window.fazerPix()">💸 Apoiar</button>
+
+    <div id="cookie-banner">
+        <p>🍪 <strong>Sistema:</strong> Este site usa cookies para melhorar sua experiência no Linux Lab.</p>
+        <button class="cookie-btn btn-accept" onclick="window.aceitarCookies()">[ACEITAR]</button>
+        <button class="cookie-btn btn-deny" onclick="window.recusarCookies()">[RECUSAR]</button>
+    </div>
 
     <div id="leitura-overlay">
         <button class="btn-voltar" onclick="window.fecharPost()">< Voltar ao Lab</button>
@@ -81,7 +122,27 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // MONITORAMENTO EM TEMPO REAL
+        // --- LÓGICA DOS COOKIES ---
+        // Verifica se já existe uma decisão salva
+        function verificarCookies() {
+            const decisao = localStorage.getItem('linuxLabCookies');
+            if (!decisao) {
+                // Se não tem decisão, mostra o banner
+                document.getElementById('cookie-banner').style.display = 'block';
+            }
+        }
+
+        window.aceitarCookies = function() {
+            localStorage.setItem('linuxLabCookies', 'aceito');
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+
+        window.recusarCookies = function() {
+            localStorage.setItem('linuxLabCookies', 'recusado');
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+
+        // --- SINCRONIZAÇÃO FIREBASE ---
         function iniciarSincronizacao() {
             const grid = document.getElementById('grid-posts');
             const loading = document.getElementById('loading');
@@ -159,18 +220,13 @@
             });
         };
 
-        // --- AQUI ESTÁ A CORREÇÃO DO PIX ---
         window.fazerPix = function() {
-            // MUDAR AQUI: Coloque sua chave PIX de verdade (email, cpf, etc)
-            const minhaChavePix = "pixlinuxblog@gmail.com"; 
-
+            const minhaChavePix = "danilo@linuxlab.com.br"; // <-- SUA CHAVE AQUI
             navigator.clipboard.writeText(minhaChavePix).then(function() {
-                // SUCESSO: Copiou
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                alert("✅ Chave PIX copiada com sucesso!\n\n" + minhaChavePix + "\n\nObrigado pelo apoio! 🐧");
+                alert("✅ Chave PIX copiada!\n" + minhaChavePix);
             }).catch(function(err) {
-                // ERRO: Se falhar (alguns celulares antigos), mostra pra pessoa copiar manual
-                prompt("Seu navegador bloqueou a cópia automática. Copie a chave abaixo:", minhaChavePix);
+                prompt("Copie a chave abaixo:", minhaChavePix);
             });
         };
 
@@ -185,7 +241,10 @@
             document.getElementById('home-view').style.display = 'block';
         });
 
+        // INICIA TUDO
         iniciarSincronizacao();
+        verificarCookies(); // Chama a verificação dos cookies
+
     </script>
 </body>
 </html>
