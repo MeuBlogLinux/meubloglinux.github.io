@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- ESTILO CYBERPUNK --- */
+        /* --- ESTILO CYBERPUNK (Mantido) --- */
         :root { --bg: #050505; --panel: #111; --text: #eee; --neon-green: #00ff41; --neon-purple: #9d00ff; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 80px; }
         
@@ -28,11 +28,8 @@
 
         #leitura-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow-y: auto; z-index: 100; padding: 20px; box-sizing: border-box; }
         .btn-voltar { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 10px 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px; display: inline-block; }
-
-        /* Estilo do conteúdo do post */
         #conteudo-post h2 { color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 10px; }
         #conteudo-post p { line-height: 1.6; color: #ccc; margin-bottom: 15px; }
-        #conteudo-post img { max-width: 100%; border: 1px solid var(--neon-purple); border-radius: 5px; margin: 10px 0; }
 
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); cursor: pointer; border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -52,7 +49,7 @@
         </header>
 
         <div class="container">
-            <div id="loading">Conectando ao banco de dados...</div>
+            <div id="loading">Sincronizando Banco de Dados...</div>
             <div class="grid" id="grid-posts">
                 </div>
         </div>
@@ -66,11 +63,10 @@
     </div>
 
     <script type="module">
-        // Importa o Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // Importamos 'onSnapshot' que é o segredo do tempo real
+        import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // SUA CONFIGURAÇÃO REAL
         const firebaseConfig = {
             apiKey: "AIzaSyDnkmZ7BMasKQQGnAQSTi3jxiuCbxyLU7M",
             authDomain: "meubloglinux.firebaseapp.com",
@@ -80,52 +76,52 @@
             appId: "1:262696388382:web:d2784dc5dbba922cc8eb0f"
         };
 
-        // Inicializa
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         let listaArtigos = [];
 
-        // BUSCA DADOS DO FIREBASE
-        async function carregarPosts() {
+        // --- FUNÇÃO TEMPO REAL (REAL-TIME) ---
+        function iniciarSincronizacao() {
             const grid = document.getElementById('grid-posts');
             const loading = document.getElementById('loading');
             
             loading.style.display = 'block';
-            grid.innerHTML = '';
 
-            try {
-                // Tenta pegar a coleção 'artigos'
-                const q = query(collection(db, "artigos")); 
-                const querySnapshot = await getDocs(q);
-
-                listaArtigos = []; // Reseta a lista
-                querySnapshot.forEach((doc) => {
+            // Essa função fica "escutando" o banco 24h
+            const q = query(collection(db, "artigos"));
+            
+            onSnapshot(q, (snapshot) => {
+                // Sempre que o banco mudar, esse código roda sozinho
+                listaArtigos = [];
+                snapshot.forEach((doc) => {
                     let dados = doc.data();
                     dados.id = doc.id; 
                     listaArtigos.push(dados);
                 });
 
+                // Atualiza a tela na hora
                 renderizar(listaArtigos);
-            } catch (error) {
-                console.error("Erro:", error);
-                grid.innerHTML = '<p style="color:red; text-align:center;">Erro de conexão. Verifique se a coleção "artigos" existe no Firestore.</p>';
-            } finally {
                 loading.style.display = 'none';
-            }
+            }, (error) => {
+                console.error("Erro:", error);
+                grid.innerHTML = '<p style="color:red; text-align:center;">Falha na conexão em tempo real.</p>';
+            });
         }
 
-        // RENDERIZA OS CARDS
         function renderizar(lista) {
             const grid = document.getElementById('grid-posts');
             grid.innerHTML = '';
             
             if(lista.length === 0) {
-                grid.innerHTML = '<p style="text-align:center;">Nenhum artigo encontrado. Crie um documento na coleção "artigos" do Firebase.</p>';
+                grid.innerHTML = '<p style="text-align:center;">Aguardando dados...</p>';
                 return;
             }
 
-            lista.forEach(post => {
+            // Inverte a lista para o post mais novo aparecer primeiro (simples)
+            const listaInvertida = [...lista].reverse();
+
+            listaInvertida.forEach(post => {
                 const cat = post.categoria || 'Sistema';
                 const tit = post.titulo || 'Sem Título';
                 
@@ -143,27 +139,19 @@
         window.abrirPost = function(id) {
             const post = listaArtigos.find(p => p.id === id);
             if (post) {
-                // Tenta pegar 'conteudo' ou 'texto', o que existir no banco
                 let conteudoHTML = post.conteudo || post.texto || '<p>Sem conteúdo...</p>';
-                
-                // Adiciona o título dentro do post se não tiver
                 if (!conteudoHTML.includes('<h2>')) {
                     conteudoHTML = `<h2>${post.titulo}</h2>` + conteudoHTML;
                 }
-
                 document.getElementById('conteudo-post').innerHTML = conteudoHTML;
                 document.getElementById('home-view').style.display = 'none';
                 document.getElementById('leitura-overlay').style.display = 'block';
                 window.scrollTo(0,0);
-                
-                // Correção do botão voltar
                 history.pushState({page: 'leitura'}, null, '#leitura');
             }
         };
 
-        window.fecharPost = function() {
-            history.back();
-        };
+        window.fecharPost = function() { history.back(); };
 
         window.filtrarPosts = function() {
             const termo = document.getElementById('busca-input').value.toLowerCase();
@@ -171,31 +159,33 @@
                 (post.titulo && post.titulo.toLowerCase().includes(termo)) || 
                 (post.categoria && post.categoria.toLowerCase().includes(termo))
             );
-            renderizar(filtrados);
+            // Renderiza os filtrados (sem inverter de novo pra não bagunçar)
+            const grid = document.getElementById('grid-posts');
+            grid.innerHTML = '';
+            filtrados.reverse().forEach(post => {
+                // (Mesmo HTML do renderizar)
+                grid.innerHTML += `<div class="card" onclick="window.abrirPost('${post.id}')"><span>// ${post.categoria}</span><h2>${post.titulo}</h2></div>`;
+            });
         };
 
         window.fazerPix = function() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            // Aqui você pode colocar sua chave pix real depois
-            alert("Obrigado pelo apoio! (Configurar Chave Pix)");
+            alert("Obrigado pelo apoio!");
         };
 
-        // Relógio
         function atualizarRelogio() {
-            const agora = new Date();
-            document.getElementById('relogio').innerText = agora.toLocaleTimeString('pt-BR');
+            document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR');
         }
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio();
         
-        // Listener do botão voltar
         window.addEventListener('popstate', function() {
             document.getElementById('leitura-overlay').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
         });
 
-        // INICIAR
-        carregarPosts();
+        // INICIA O MONITORAMENTO
+        iniciarSincronizacao();
 
     </script>
 </body>
