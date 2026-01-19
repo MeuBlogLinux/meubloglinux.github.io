@@ -3,151 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linux Lab | Cyberpunk Blog</title>
+    <title>Linux Lab | Cyberpunk</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
-        /* =========================================
-           ESTILO CYBERPUNK (O que você gostou)
-           ========================================= */
+        /* --- ESTILO GERAL CYBERPUNK --- */
         :root {
-            --bg-color: #050505;
-            --text-primary: #e0e0e0;
-            --neon-green: #00ff41;  /* Aquele verde hacker */
-            --neon-purple: #bc13fe; /* O roxo do neon */
-            --card-bg: #111;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace;
+            --bg: #050505;
+            --panel: #111;
+            --text: #eee;
+            --neon-green: #00ff41;
+            --neon-purple: #9d00ff;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            padding-bottom: 50px;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; /* Espaço pro botão do Pix */
         }
 
-        /* CABEÇALHO COM ANIMAÇÃO */
+        /* --- CABEÇALHO & RELÓGIO --- */
         header {
             text-align: center;
-            padding: 40px 20px;
-            border-bottom: 1px solid #333;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            padding: 20px;
+            border-bottom: 2px solid var(--neon-green);
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
         }
 
-        h1 {
+        h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
+        
+        #relogio {
             font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-green);
+            margin: 10px 0;
+        }
+
+        /* --- BARRA DE BUSCA --- */
+        .search-box {
+            margin: 20px auto;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        #busca-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            background: #000;
+            border: 1px solid var(--neon-purple);
             color: var(--neon-green);
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: var(--neon-purple);
             font-size: 1rem;
-            letter-spacing: 2px;
+            outline: none;
+            border-radius: 5px;
         }
 
-        /* GRID DE POSTS */
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+        /* --- GRID DE POSTS --- */
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 
         .card {
-            background-color: var(--card-bg);
+            background: var(--panel);
             border: 1px solid #333;
-            padding: 25px;
+            padding: 15px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        /* Efeito Hover (passar o mouse) */
         .card:hover {
             border-color: var(--neon-green);
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 3px; height: 100%;
-            background-color: var(--neon-purple);
-        }
+        .card h2 { color: #fff; font-size: 1.2rem; margin-bottom: 5px; }
+        .card span { font-size: 0.8rem; color: var(--neon-purple); }
 
-        .card h2 {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .card p {
-            font-size: 0.95rem;
-            color: #aaa;
-            line-height: 1.5;
-        }
-
-        /* TELA DE LEITURA (Começa escondida) */
+        /* --- TELA DE LEITURA (OVERLAY) --- */
         #leitura-overlay {
-            display: none; /* Segredo: Oculto no início */
-            background-color: var(--bg-color);
-            min-height: 100vh;
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            overflow-y: auto;
+            z-index: 100;
             padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            box-sizing: border-box;
         }
 
         .btn-voltar {
             background: transparent;
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
-            padding: 10px 25px;
-            font-size: 1rem;
+            padding: 10px 20px;
+            font-weight: bold;
             cursor: pointer;
-            margin-bottom: 30px;
-            transition: 0.3s;
+            margin-bottom: 20px;
             display: inline-block;
         }
 
-        .btn-voltar:hover {
-            background: var(--neon-green);
-            color: #000;
-            box-shadow: 0 0 10px var(--neon-green);
+        /* --- BOTÃO PIX FLUTUANTE --- */
+        .btn-pix {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--neon-purple);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
+            cursor: pointer;
+            border: none;
+            z-index: 50;
+            animation: pulsando 2s infinite;
         }
 
-        #artigo-conteudo h2 {
-            font-size: 2rem;
-            color: var(--neon-green);
-            margin-bottom: 10px;
-        }
-
-        #artigo-conteudo .meta {
-            color: var(--neon-purple);
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 15px;
-        }
-
-        #artigo-conteudo p {
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #ccc;
+        @keyframes pulsando {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
     </style>
@@ -157,98 +140,127 @@
     <div id="home-view">
         <header>
             <h1>Linux_Lab_</h1>
-            <div class="subtitle" id="typewriter">> System Online...</div>
+            <div id="relogio">00:00:00</div>
+            <div class="search-box">
+                <input type="text" id="busca-input" placeholder="Buscar comando ou artigo..." onkeyup="filtrarPosts()">
+            </div>
         </header>
 
         <div class="container">
-            <div class="grid">
-                <div class="card" onclick="abrirArtigo(1)">
-                    <h2>Revivendo Hardware Antigo</h2>
-                    <p>Como transformei um PC "lixo" em uma máquina produtiva usando Linux Mint e XFCE.</p>
+            <div class="grid" id="grid-posts">
                 </div>
-
-                <div class="card" onclick="abrirArtigo(2)">
-                    <h2>Jogos no Linux (Guia)</h2>
-                    <p>A saga para rodar GTA e CS2. O que fazer quando o processador não tem SSE4.2?</p>
-                </div>
-
-                <div class="card" onclick="abrirArtigo(3)">
-                    <h2>Estética Cyberpunk</h2>
-                    <p>Personalizando o terminal e o VS Code para ter o visual hacker definitivo.</p>
-                </div>
-            </div>
         </div>
     </div>
 
+    <button class="btn-pix" onclick="fazerPix()">💸 Apoiar com Pix</button>
+
     <div id="leitura-overlay">
-        <button class="btn-voltar" onclick="fecharArtigo()">< Voltar ao Lab</button>
-        
-        <div id="artigo-conteudo">
-            </div>
+        <button class="btn-voltar" onclick="fecharPost()">< Voltar</button>
+        <div id="conteudo-post"></div>
     </div>
 
     <script>
-        // Banco de Dados dos seus posts
-        const posts = {
-            1: {
-                titulo: "Revivendo Hardware Antigo",
-                meta: "19 Jan 2026 | Autor: Danilo",
-                texto: `
-                    <p>Muitos jogam fora computadores antigos achando que não prestam. Mas com o Kernel Linux certo, eles voam.</p>
-                    <p>Neste teste, pegamos uma máquina com 4GB de RAM. No Windows, ela travava para abrir o navegador. No Linux Mint XFCE, o sistema consome apenas 600MB ligado.</p>
-                    <p>O segredo é evitar ambientes pesados como GNOME e focar na eficiência.</p>`
+        /* --- DADOS DOS POSTS --- */
+        const artigos = [
+            {
+                id: 1,
+                titulo: "Revivendo PC Antigo",
+                categoria: "Hardware",
+                texto: "<h2>O Poder do XFCE</h2><p>Não jogue seu Core 2 Duo fora. Com Linux Mint XFCE e um SSD, ele voa. O consumo de RAM fica abaixo de 600MB.</p>"
             },
-            2: {
-                titulo: "Jogos no Linux: O Guia",
-                meta: "19 Jan 2026 | Categoria: Gaming",
-                texto: `
-                    <p>A batalha de hoje foi tentar rodar CS2. Infelizmente, sem instruções SSE4.2 no processador, não rolou.</p>
-                    <p>Mas descobrimos o <strong>Lutris</strong> e o <strong>MTA (Multi Theft Auto)</strong>. O GTA San Andreas Online roda perfeito, com ping baixo e servidores brasileiros lotados.</p>
-                    <p>Não precisa de PC da NASA para se divertir, só precisa do sistema certo.</p>`
+            {
+                id: 2,
+                titulo: "Jogos no Linux (GTA & CS)",
+                categoria: "Gaming",
+                texto: "<h2>MTA e Lutris</h2><p>Seu PC não tem SSE4.2 para o CS2? Sem problemas. O <strong>MTA San Andreas</strong> roda liso e tem servidores BR lotados. Use o Lutris para instalar.</p>"
             },
-            3: {
-                titulo: "Estética Cyberpunk",
-                meta: "18 Jan 2026 | Categoria: Rice",
-                texto: `
-                    <p>Rice é a arte de deixar seu Linux bonito. Usamos cores neon (#00ff41) e fundos escuros.</p>
-                    <p>No terminal, transparência é essencial. Fontes monospaced completam o visual.</p>`
+            {
+                id: 3,
+                titulo: "Terminal: Comandos Básicos",
+                categoria: "Tutorial",
+                texto: "<h2>Não tenha medo</h2><p><code>sudo apt update</code>: Atualiza listas.<br><code>sudo apt install htop</code>: Instala o monitor de sistema.</p>"
+            },
+            {
+                id: 4,
+                titulo: "Personalização Cyberpunk",
+                categoria: "Rice",
+                texto: "<h2>Estilo Neon</h2><p>Use cores hexadecimais como #00ff41 (Verde Matrix) e #bc13fe (Roxo Cyber) para deixar seu terminal incrível.</p>"
             }
-        };
+        ];
 
-        // --- FUNÇÃO PARA ABRIR O ARTIGO ---
-        function abrirArtigo(id) {
-            const dados = posts[id];
+        /* --- 1. RENDERIZAR POSTS (COM BUSCA) --- */
+        const grid = document.getElementById('grid-posts');
 
-            // 1. Preenche o conteúdo
-            const html = `
-                <h2>${dados.titulo}</h2>
-                <div class="meta">${dados.meta}</div>
-                ${dados.texto}
-            `;
-            document.getElementById('artigo-conteudo').innerHTML = html;
+        function renderizar(lista) {
+            grid.innerHTML = ''; // Limpa
+            lista.forEach(post => {
+                grid.innerHTML += `
+                    <div class="card" onclick="abrirPost(${post.id})">
+                        <span>// ${post.categoria}</span>
+                        <h2>${post.titulo}</h2>
+                    </div>
+                `;
+            });
+        }
+        // Inicia mostrando tudo
+        renderizar(artigos);
 
-            // 2. Troca as telas
+        /* --- 2. FILTRO DE BUSCA --- */
+        function filtrarPosts() {
+            const termo = document.getElementById('busca-input').value.toLowerCase();
+            const filtrados = artigos.filter(post => 
+                post.titulo.toLowerCase().includes(termo) || 
+                post.categoria.toLowerCase().includes(termo)
+            );
+            renderizar(filtrados);
+        }
+
+        /* --- 3. RELÓGIO DIGITAL --- */
+        function atualizarRelogio() {
+            const agora = new Date();
+            const hora = agora.toLocaleTimeString('pt-BR');
+            document.getElementById('relogio').innerText = hora;
+        }
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+
+        /* --- 4. SISTEMA DE ABRIR POST (CORRIGIDO) --- */
+        function abrirPost(id) {
+            const post = artigos.find(p => p.id === id);
+            
+            // Preenche o conteúdo
+            document.getElementById('conteudo-post').innerHTML = post.texto;
+
+            // Troca a tela
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('leitura-overlay').style.display = 'block';
-            window.scrollTo(0, 0);
+            window.scrollTo(0,0);
 
-            // 3. A CORREÇÃO MÁGICA (Isso resolve o bug do voltar)
-            // Adiciona um estado no histórico. O navegador acha que mudou de página.
-            history.pushState({ page: 'artigo' }, null, '#artigo');
+            // CORREÇÃO DO BUG DO VOLTAR
+            history.pushState({page: 'leitura'}, null, '#leitura');
         }
 
-        // --- FUNÇÃO PARA FECHAR (Botão da tela) ---
-        function fecharArtigo() {
-            // Volta no histórico (aciona o evento popstate abaixo)
-            history.back();
+        function fecharPost() {
+            history.back(); // Aciona o popstate
         }
 
-        // --- ESCUTA O BOTÃO VOLTAR DO CELULAR/NAVEGADOR ---
-        window.addEventListener('popstate', function(event) {
-            // Se o usuário apertou voltar, a gente restaura a Home
+        // Evento que detecta o botão voltar do celular
+        window.addEventListener('popstate', function() {
             document.getElementById('leitura-overlay').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
         });
+
+        /* --- 5. BOTÃO PIX COM CONFETE --- */
+        function fazerPix() {
+            // Solta o confete!
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            alert("Chave Pix copiada! (Simulação)\nObrigado pelo café, Dev! ☕");
+        }
 
     </script>
 </body>
