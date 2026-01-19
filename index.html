@@ -19,7 +19,7 @@
         h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
         #relogio { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); margin: 10px 0; }
         
-        /* NOVO: BARRA DE NAVEGAÇÃO (MENU) */
+        /* MENU DE NAVEGAÇÃO */
         .nav-bar {
             margin-top: 15px;
             display: flex;
@@ -38,7 +38,7 @@
             font-weight: bold;
             text-transform: uppercase;
             transition: 0.3s;
-            text-decoration: none; /* Para links funcionarem como botões */
+            text-decoration: none;
             display: inline-block;
         }
 
@@ -77,11 +77,11 @@
         .btn-like:hover { border-color: #ff4040; color: #ff4040; }
         .btn-like.curtido { background: rgba(255, 64, 64, 0.2); border-color: #ff4040; color: #ff4040; cursor: default; }
 
-        /* TELAS DE OVERLAY (LEITURA E SOBRE) */
+        /* TELAS DE OVERLAY */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow-y: auto; z-index: 100; padding: 20px; box-sizing: border-box; }
         .btn-voltar { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 10px 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         
-        /* Conteúdo dos posts e do sobre */
+        /* Conteúdo Overlay */
         .overlay-content h2 { color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 10px; }
         .overlay-content img { max-width: 100%; border-radius: 5px; margin: 10px 0; border: 1px solid var(--neon-purple); }
         .overlay-content p { line-height: 1.6; color: #ccc; margin-bottom: 15px; }
@@ -120,7 +120,7 @@
 
             <div class="nav-bar">
                 <button class="nav-btn" onclick="window.abrirSobre()">[ 💾 SOBRE ]</button>
-                <a href="mailto:danilogardiano@gmail.com?subject=Ideia para o Linux Lab&body=Ola Danilo, tenho uma sugestão de post:" class="nav-btn">[ 💡 ENVIAR IDEIA ]</a>
+                <a href="mailto:dan2050mg@gmail.com?subject=Ideia para o Linux Lab&body=Ola Danilo, tenho uma sugestão de post:" class="nav-btn">[ 💡 ENVIAR IDEIA ]</a>
             </div>
 
             <div class="search-box">
@@ -190,20 +190,19 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- FUNÇÕES DE NAVEGAÇÃO ---
+        // NAVEGAÇÃO
         window.abrirSobre = function() {
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('sobre-overlay').style.display = 'block';
             window.scrollTo(0,0);
         };
-
         window.fecharOverlays = function() {
             document.getElementById('leitura-overlay').style.display = 'none';
             document.getElementById('sobre-overlay').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
         };
 
-        // --- EFEITO DIGITAÇÃO ---
+        // DIGITAÇÃO
         const mensagens = [
             "Iniciando Kernel v5.1...",
             "Carregando módulos de segurança...",
@@ -211,10 +210,8 @@
             "Acesso Root: CONCEDIDO.",
             "Bem-vindo ao Linux Lab."
         ];
-
         async function digitarTerminal() {
             const elemento = document.getElementById('terminal-typing');
-            
             for (let i = 0; i < mensagens.length; i++) {
                 const frase = mensagens[i];
                 elemento.innerText = "> "; 
@@ -228,7 +225,7 @@
         }
         digitarTerminal();
 
-        // --- SISTEMA DE LIKES ---
+        // LIKES
         function jaCurtiu(id) {
             const likesSalvos = JSON.parse(localStorage.getItem('meusLikes') || '[]');
             return likesSalvos.includes(id);
@@ -238,7 +235,6 @@
             likesSalvos.push(id);
             localStorage.setItem('meusLikes', JSON.stringify(likesSalvos));
         }
-
         window.curtirPost = async function(event, id) {
             event.stopPropagation();
             if (jaCurtiu(id)) { alert("Você já curtiu este post! 👍"); return; }
@@ -250,7 +246,7 @@
             confetti({ particleCount: 50, spread: 60, origin: { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight } });
         };
 
-        // --- MATRIX RAIN ---
+        // MATRIX
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -273,7 +269,7 @@
         }
         setInterval(drawMatrix, 50);
 
-        // --- RENDERIZAÇÃO ---
+        // RENDERIZAÇÃO
         function iniciarSincronizacao() {
             const grid = document.getElementById('grid-posts');
             const loading = document.getElementById('loading');
@@ -342,9 +338,7 @@
             }
         };
 
-        // Atualizado para fechar qualquer overlay
         window.fecharPost = function() { window.fecharOverlays(); };
-        
         window.filtrarPosts = function() {
             const termo = document.getElementById('busca-input').value.toLowerCase();
             const filtrados = listaArtigos.filter(p => p.titulo.toLowerCase().includes(termo));
@@ -362,9 +356,7 @@
         window.recusarCookies = () => { localStorage.setItem('linuxLabCookies','no'); document.getElementById('cookie-banner').style.display='none'; }
         
         setInterval(() => document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
-        window.addEventListener('popstate', () => {
-            window.fecharOverlays();
-        });
+        window.addEventListener('popstate', () => { window.fecharOverlays(); });
 
         iniciarSincronizacao();
     </script>
