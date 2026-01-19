@@ -11,39 +11,54 @@
         :root { --bg: #050505; --panel: rgba(17, 17, 17, 0.95); --text: #eee; --neon-green: #00ff41; --neon-purple: #9d00ff; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 0; overflow-x: hidden; }
         
-        /* MATRIX BACKGROUND */
         canvas#matrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
 
-        /* CABEÇALHO */
         header { text-align: center; padding: 20px; border-bottom: 2px solid var(--neon-green); background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
         h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
         #relogio { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); margin: 10px 0; }
         
-        /* BUSCA */
         .search-box { margin: 20px auto; max-width: 90%; text-align: center; }
         #busca-input { width: 100%; max-width: 400px; padding: 10px; background: #000; border: 1px solid var(--neon-purple); color: var(--neon-green); outline: none; border-radius: 5px; }
 
-        /* GRID */
         .container { padding: 20px; max-width: 800px; margin: 0 auto; min-height: 60vh; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         
-        /* CARDS */
+        /* CARD */
         .card { background: var(--panel); border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
         .card:hover { border-color: var(--neon-green); transform: translateY(-5px); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
-        
-        /* IMAGEM DO CARD */
         .card-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid #333; display: block; background: #222; }
-        
         .card-body { padding: 15px; }
         .card h2 { color: #fff; font-size: 1.2rem; margin: 5px 0; }
         .card span { font-size: 0.8rem; color: var(--neon-purple); display: block; margin-bottom: 5px; }
         
-        /* LIKES */
+        /* LIKE BUTTON ATUALIZADO */
         .like-area { margin-top: 10px; display: flex; align-items: center; font-size: 0.9rem; color: #ccc; }
-        .btn-like { background: none; border: 1px solid #333; color: #ff4040; cursor: pointer; padding: 5px 10px; border-radius: 20px; margin-right: 5px; transition: 0.2s; }
-        .btn-like:hover { background: #ff4040; color: #fff; }
+        
+        .btn-like { 
+            background: none; 
+            border: 1px solid #333; 
+            color: #ccc; /* Cor cinza padrão */
+            cursor: pointer; 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            margin-right: 5px; 
+            transition: 0.2s; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-like:hover { border-color: #ff4040; color: #ff4040; }
 
-        /* TELA DE LEITURA */
+        /* Estilo QUANDO JÁ CURTIU */
+        .btn-like.curtido {
+            background: rgba(255, 64, 64, 0.2);
+            border-color: #ff4040;
+            color: #ff4040;
+            cursor: default; /* Remove ponteiro de clique */
+        }
+
+        /* OUTROS ELEMENTOS */
         #leitura-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow-y: auto; z-index: 100; padding: 20px; box-sizing: border-box; }
         .btn-voltar { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 10px 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         #conteudo-post h2 { color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 10px; }
@@ -51,40 +66,18 @@
         #conteudo-post p { line-height: 1.6; color: #ccc; margin-bottom: 15px; }
         pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #333; color: var(--neon-green); }
 
-        /* BOTÃO PIX */
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); cursor: pointer; border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* COOKIES */
         #cookie-banner { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background-color: #000; border: 1px solid var(--neon-green); padding: 20px; z-index: 200; border-radius: 10px; text-align: center; }
         .cookie-btn { padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; border-radius: 5px; }
         .btn-accept { background: var(--neon-green); border: none; }
         .btn-deny { background: transparent; border: 1px solid #555; color: #fff; }
 
-        /* --- RODAPÉ SIMPLIFICADO --- */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid var(--neon-green);
-            background: #000;
-            margin-top: 50px;
-            position: relative;
-            z-index: 10;
-        }
+        footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--neon-green); background: #000; margin-top: 50px; position: relative; z-index: 10; }
         .social-links { margin: 15px 0; }
-        .social-links a {
-            color: var(--neon-purple);
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: 0.3s;
-        }
-        .social-links a:hover {
-            color: var(--neon-green);
-            text-shadow: 0 0 15px var(--neon-green);
-            letter-spacing: 2px;
-        }
+        .social-links a { color: var(--neon-purple); text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); letter-spacing: 2px; }
         .copyright { color: #444; font-size: 0.8rem; }
     </style>
 </head>
@@ -108,22 +101,17 @@
 
         <footer>
             <p style="color: #fff; font-weight: bold;">LINUX_LAB_ // SYSTEM.ROOT</p>
-            
             <div class="social-links">
                 <a href="#" target="_blank">TWITTER</a>
             </div>
-
-            <p class="copyright">
-                Developed by <strong>Danilo</strong> © 2026<br>
-                All systems operational.
-            </p>
+            <p class="copyright">Developed by <strong>Danilo</strong> © 2026<br>All systems operational.</p>
         </footer>
     </div>
 
     <button class="btn-pix" onclick="window.fazerPix()">💸 Apoiar</button>
 
     <div id="cookie-banner">
-        <p>🍪 Sistema: Aceita cookies para salvar suas preferências?</p>
+        <p>🍪 Sistema: Aceita cookies?</p>
         <button class="cookie-btn btn-accept" onclick="window.aceitarCookies()">ACEITAR</button>
         <button class="cookie-btn btn-deny" onclick="window.recusarCookies()">RECUSAR</button>
     </div>
@@ -150,7 +138,46 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- 1. MATRIX RAIN ---
+        // --- SISTEMA DE CONTROLE DE LIKES (LocalStorage) ---
+        function jaCurtiu(id) {
+            // Pega a lista de likes do navegador
+            const likesSalvos = JSON.parse(localStorage.getItem('meusLikes') || '[]');
+            return likesSalvos.includes(id);
+        }
+
+        function salvarLike(id) {
+            // Salva o ID na lista do navegador
+            const likesSalvos = JSON.parse(localStorage.getItem('meusLikes') || '[]');
+            likesSalvos.push(id);
+            localStorage.setItem('meusLikes', JSON.stringify(likesSalvos));
+        }
+
+        // --- AÇÃO DE CURTIR ---
+        window.curtirPost = async function(event, id) {
+            event.stopPropagation();
+            
+            // 1. Verifica se já curtiu
+            if (jaCurtiu(id)) {
+                alert("Você já curtiu este post! 👍");
+                return;
+            }
+
+            // 2. Envia para o Firebase
+            const postRef = doc(db, "artigos", id);
+            await updateDoc(postRef, { likes: increment(1) });
+            
+            // 3. Salva no navegador para bloquear clicks futuros
+            salvarLike(id);
+            
+            // 4. Efeito Visual de Confete
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight }
+            });
+        };
+
+        // --- MATRIX ---
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -173,14 +200,7 @@
         }
         setInterval(drawMatrix, 50);
 
-        // --- 2. SISTEMA DE LIKES ---
-        window.curtirPost = async function(event, id) {
-            event.stopPropagation();
-            const postRef = doc(db, "artigos", id);
-            await updateDoc(postRef, { likes: increment(1) });
-        };
-
-        // --- 3. RENDERIZAÇÃO ---
+        // --- RENDERIZAÇÃO ---
         function iniciarSincronizacao() {
             const grid = document.getElementById('grid-posts');
             const loading = document.getElementById('loading');
@@ -213,6 +233,11 @@
                     imagemHTML = `<img src="${post.imagem}" class="card-img" onerror="this.style.display='none'">`;
                 }
 
+                // VERIFICA SE O USUÁRIO JÁ CURTIU ESSE POST ESPECÍFICO
+                const userCurtiu = jaCurtiu(post.id);
+                const classeBotao = userCurtiu ? "btn-like curtido" : "btn-like";
+                const icone = userCurtiu ? "❤️" : "🤍"; // Coração vermelho ou branco
+
                 grid.innerHTML += `
                     <div class="card" onclick="window.abrirPost('${post.id}')">
                         ${imagemHTML}
@@ -220,7 +245,7 @@
                             <span>// ${cat}</span>
                             <h2>${tit}</h2>
                             <div class="like-area">
-                                <button class="btn-like" onclick="window.curtirPost(event, '${post.id}')">❤️ ${likes}</button>
+                                <button class="${classeBotao}" onclick="window.curtirPost(event, '${post.id}')">${icone} ${likes}</button>
                             </div>
                         </div>
                     </div>
@@ -228,7 +253,6 @@
             });
         }
 
-        // --- 4. FUNÇÕES GERAIS ---
         window.abrirPost = function(id) {
             const post = listaArtigos.find(p => p.id === id);
             if (post) {
@@ -259,15 +283,12 @@
             }).catch(() => prompt("Copie:", chave));
         };
         
-        // Cookies
         if(!localStorage.getItem('linuxLabCookies')) document.getElementById('cookie-banner').style.display = 'block';
         window.aceitarCookies = () => { localStorage.setItem('linuxLabCookies','ok'); document.getElementById('cookie-banner').style.display='none'; }
         window.recusarCookies = () => { localStorage.setItem('linuxLabCookies','no'); document.getElementById('cookie-banner').style.display='none'; }
         
-        // Relógio
         setInterval(() => document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
         
-        // Navegação
         window.addEventListener('popstate', () => {
             document.getElementById('leitura-overlay').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
