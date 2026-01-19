@@ -31,7 +31,7 @@
         .card { background: var(--panel); border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
         .card:hover { border-color: var(--neon-green); transform: translateY(-5px); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
         
-        /* IMAGEM DO CARD (Corrigido) */
+        /* IMAGEM DO CARD */
         .card-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid #333; display: block; background: #222; }
         
         .card-body { padding: 15px; }
@@ -61,7 +61,7 @@
         .btn-accept { background: var(--neon-green); border: none; }
         .btn-deny { background: transparent; border: 1px solid #555; color: #fff; }
 
-        /* --- NOVO RODAPÉ (FOOTER) --- */
+        /* --- RODAPÉ SIMPLIFICADO --- */
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -110,9 +110,7 @@
             <p style="color: #fff; font-weight: bold;">LINUX_LAB_ // SYSTEM.ROOT</p>
             
             <div class="social-links">
-                <a href="#" target="_blank">GITHUB</a>
                 <a href="#" target="_blank">TWITTER</a>
-                <a href="#" target="_blank">INSTAGRAM</a>
             </div>
 
             <p class="copyright">
@@ -210,7 +208,6 @@
                 const tit = post.titulo || 'Sem Título';
                 const likes = post.likes || 0;
                 
-                // Lógica de Imagem Segura
                 let imagemHTML = "";
                 if (post.imagem && post.imagem.trim() !== "") {
                     imagemHTML = `<img src="${post.imagem}" class="card-img" onerror="this.style.display='none'">`;
