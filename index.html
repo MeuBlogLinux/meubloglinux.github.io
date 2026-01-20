@@ -92,6 +92,9 @@
         .social-links a { color: var(--neon-purple); text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; }
         .social-links a:hover { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); letter-spacing: 2px; }
         .copyright { color: #888; font-size: 0.8rem; }
+        
+        /* NOVO: MOSTRADOR DE IP NO FOOTER */
+        #ip-display { font-size: 0.8rem; color: var(--neon-purple); margin-top: 10px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -102,6 +105,7 @@
         <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">
             Linux Lab Shell v1.0<br>
             Digite 'help' para ver os comandos.<br>
+            <span id="terminal-ip-log" style="color: yellow; opacity: 0.8;">> SCANNING NETWORK...</span><br>
         </div>
         <div style="display:flex;">
             <span style="color:var(--neon-green); margin-right:10px;">root@linuxlab:~$</span>
@@ -143,6 +147,7 @@
                 <a href="https://x.com/DaniloGardiano" target="_blank" onmouseenter="window.playHover()">TWITTER</a>
             </div>
             <p class="copyright">Developed by <strong>Danilo</strong> © 2026<br>All systems operational.</p>
+            <div id="ip-display">CLIENT IP: DETECTING...</div>
         </footer>
     </div>
 
@@ -219,12 +224,32 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- SISTEMA DE SOM (WEB AUDIO API) ---
+        // --- IP TRACKER (NOVO) ---
+        async function rastrearIP() {
+            try {
+                // Usa API gratuita para pegar IP
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                const ip = data.ip;
+
+                // Atualiza Footer
+                document.getElementById('ip-display').innerText = `CLIENT IP: ${ip} [TRACKED]`;
+
+                // Atualiza Terminal Secreto
+                const termLog = document.getElementById('terminal-ip-log');
+                termLog.innerHTML = `> CONNECTION ESTABLISHED.<br>> CLIENT IP: <span style="color:#ff0055">${ip}</span><br>> ACCESS LOGGED.`;
+            } catch (e) {
+                console.log("Erro ao pegar IP");
+                document.getElementById('ip-display').innerText = "CLIENT IP: HIDDEN [PROXY DETECTED]";
+            }
+        }
+        rastrearIP(); // Roda ao iniciar
+
+        // --- SISTEMA DE SOM ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         let somAtivado = false; 
 
-        // HOTFIX: Acorda o motor de áudio no primeiro clique em qualquer lugar
         function destravaAudio() {
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             ['click', 'touchstart', 'keydown'].forEach(evt => document.removeEventListener(evt, destravaAudio));
