@@ -14,12 +14,31 @@
         body.light-mode {
             --bg: #e0e0e0; --panel: rgba(255, 255, 255, 0.95); --text: #111; --neon-green: #008f11; --neon-purple: #6200a3; --border: #ccc; --matrix-trail: rgba(255, 255, 255, 0.05);
         }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 0; overflow-x: hidden; transition: 0.3s; }
+        /* MUDANÇA: Cursor Crosshair (Mira) */
+        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 0; overflow-x: hidden; transition: 0.3s; cursor: crosshair; }
         
+        /* Botões também com cursor de mira ou pointer */
+        button, a, .card { cursor: alias; } 
+
         canvas#matrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
 
         header { text-align: center; padding: 20px; border-bottom: 2px solid var(--neon-green); background: var(--panel); backdrop-filter: blur(5px); transition: 0.3s; position: relative; }
-        h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* EFEITO GLITCH NO TÍTULO */
+        h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; position: relative; display: inline-block; }
+        h1:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            color: var(--neon-purple);
+        }
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
         #relogio { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); margin: 10px 0; }
         
         #btn-terminal { background: transparent; border: none; color: var(--neon-green); font-size: 1.5rem; cursor: pointer; position: absolute; top: 20px; right: 20px; font-weight: bold; animation: piscar 2s infinite; }
@@ -37,7 +56,7 @@
         .container { padding: 20px; max-width: 800px; margin: 0 auto; min-height: 60vh; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         
-        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
         .card:hover { border-color: var(--neon-green); transform: translateY(-5px); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
         .card-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid var(--border); display: block; background: #222; }
         .card-body { padding: 15px; }
@@ -201,7 +220,7 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- SISTEMA DE SOM ---
+        // --- SOM ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         let somAtivado = false; 
@@ -219,7 +238,6 @@
             oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
             if (callback) oscillator.onended = callback;
         }
-
         window.playHover = () => beep(50, 800, 0.05, "sine");
         window.playClick = () => beep(100, 400, 0.1, "square");
 
@@ -227,25 +245,16 @@
             somAtivado = !somAtivado;
             const btn = document.getElementById('btn-sound');
             if (somAtivado) {
-                btn.innerText = "[ 🔊 SOM ]";
-                btn.style.borderColor = "var(--neon-green)";
-                window.playClick();
-                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                btn.innerText = "[ 🔊 SOM ]"; btn.style.borderColor = "var(--neon-green)"; window.playClick(); if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             } else {
-                btn.innerText = "[ 🔇 SOM ]";
-                btn.style.borderColor = "#555";
+                btn.innerText = "[ 🔇 SOM ]"; btn.style.borderColor = "#555";
             }
             localStorage.setItem('somLinuxLab', somAtivado ? 'on' : 'off');
         };
-
-        if (localStorage.getItem('somLinuxLab') === 'on') {
-            somAtivado = true;
-            document.getElementById('btn-sound').innerText = "[ 🔊 SOM ]";
-        }
+        if (localStorage.getItem('somLinuxLab') === 'on') { somAtivado = true; document.getElementById('btn-sound').innerText = "[ 🔊 SOM ]"; }
 
         function anexarSons() {
-            const interativos = document.querySelectorAll('button, a, .card, input');
-            interativos.forEach(el => {
+            document.querySelectorAll('button, a, .card, input').forEach(el => {
                 el.addEventListener('mouseenter', window.playHover);
                 el.addEventListener('click', window.playClick);
             });
@@ -268,7 +277,7 @@
             } else { konamiIndex = 0; }
         });
 
-        // --- SISTEMA DE NAVEGAÇÃO ---
+        // --- NAVEGAÇÃO ---
         function abrirOverlay(id, hash) {
             document.getElementById('home-view').style.display = 'none';
             document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none'); 
@@ -279,11 +288,8 @@
         }
 
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
-        
-        // Função para abrir o tutorial (Verifica se mostra o botão ou não)
         window.abrirTutorial = () => {
             abrirOverlay('tutorial-overlay', '#ajuda');
-            // Se já viu o tutorial antes, esconde o botão "Iniciar Sessão"
             if (localStorage.getItem('vistoTutorial')) {
                 document.getElementById('btn-sessao').style.display = 'none';
             } else {
@@ -291,11 +297,10 @@
             }
         };
 
-        // Função do Botão "INICIAR SESSÃO" (Só aparece na 1ª vez)
         window.iniciarSessao = () => {
             localStorage.setItem('vistoTutorial', 'sim');
             window.playClick();
-            history.back(); // Fecha o overlay
+            history.back(); 
         };
 
         function resetarParaHome() {
@@ -303,29 +308,18 @@
             document.getElementById('home-view').style.display = 'block';
         }
 
-        // Abre automaticamente se nunca viu
-        if (!localStorage.getItem('vistoTutorial')) {
-            setTimeout(() => { window.abrirTutorial(); }, 1500);
-        }
+        if (!localStorage.getItem('vistoTutorial')) { setTimeout(() => { window.abrirTutorial(); }, 1500); }
 
         // --- TERMINAL ---
         window.toggleTerminal = function() {
             const term = document.getElementById('secret-terminal');
             const input = document.getElementById('terminal-input');
-            if (window.getComputedStyle(term).display === 'none') { 
-                term.style.display = 'block'; 
-                input.focus(); 
-            } else { 
-                term.style.display = 'none'; 
-            }
+            if (window.getComputedStyle(term).display === 'none') { term.style.display = 'block'; input.focus(); } 
+            else { term.style.display = 'none'; }
         };
         document.addEventListener('keydown', (e) => { if (e.key === "'" || e.key === "`") { e.preventDefault(); window.toggleTerminal(); } });
 
-        // --- CORES ---
-        function mudarCorMatrix(cor) {
-            document.documentElement.style.setProperty('--neon-green', cor);
-            localStorage.setItem('matrixColor', cor);
-        }
+        function mudarCorMatrix(cor) { document.documentElement.style.setProperty('--neon-green', cor); localStorage.setItem('matrixColor', cor); }
         if(localStorage.getItem('matrixColor')) mudarCorMatrix(localStorage.getItem('matrixColor'));
 
         const terminalInput = document.getElementById('terminal-input');
@@ -337,7 +331,6 @@
                 this.value = ''; 
                 terminalOutput.innerHTML += `<div style="color:var(--neon-green)">root@linuxlab:~$ ${comando}</div>`;
                 let resposta = "";
-                
                 if (comando === 'exit') { window.toggleTerminal(); return; }
                 else if (comando === 'help') resposta = "Comandos: help, clear, date, reboot, matrix red/blue/default, whoami, exit";
                 else if (comando === 'clear') { terminalOutput.innerHTML = "Linux Lab Shell v1.0<br>"; return; }
@@ -348,7 +341,6 @@
                 else if (comando === 'matrix blue') { mudarCorMatrix('#00eeff'); resposta = "Resfriamento ativo. 🔵"; }
                 else if (comando === 'matrix green' || comando === 'matrix default') { mudarCorMatrix('#00ff41'); resposta = "Padrão restaurado. 🟢"; }
                 else if (comando !== '') resposta = `Comando desconhecido: ${comando}`;
-                
                 if(resposta) terminalOutput.innerHTML += `<div style="color:#eee; margin-bottom:10px;">${resposta}</div>`;
                 document.getElementById('secret-terminal').scrollTop = document.getElementById('secret-terminal').scrollHeight;
             }
@@ -362,7 +354,7 @@
         };
         if (localStorage.getItem('temaLinuxLab') === 'claro') document.body.classList.add('light-mode');
 
-        // --- MATRIX RAIN ---
+        // --- MATRIX ---
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
