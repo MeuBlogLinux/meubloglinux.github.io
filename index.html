@@ -7,15 +7,36 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- ESTILO GERAL --- */
-        :root { --bg: #050505; --panel: rgba(17, 17, 17, 0.95); --text: #eee; --neon-green: #00ff41; --neon-purple: #9d00ff; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 0; overflow-x: hidden; }
+        /* --- ESTILO GERAL (Variáveis CSS) --- */
+        :root {
+            /* Padrão (Dark/Cyberpunk) */
+            --bg: #050505;
+            --panel: rgba(17, 17, 17, 0.95);
+            --text: #eee;
+            --neon-green: #00ff41;
+            --neon-purple: #9d00ff;
+            --border: #333;
+            --matrix-trail: rgba(0, 0, 0, 0.05); /* Rastro preto */
+        }
+
+        /* TEMA CLARO (Laboratório) */
+        body.light-mode {
+            --bg: #e0e0e0;
+            --panel: rgba(255, 255, 255, 0.95);
+            --text: #111;
+            --neon-green: #008f11; /* Verde mais escuro para ler no branco */
+            --neon-purple: #6200a3;
+            --border: #ccc;
+            --matrix-trail: rgba(255, 255, 255, 0.05); /* Rastro branco */
+        }
+
+        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 0; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         
         /* MATRIX BACKGROUND */
         canvas#matrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
 
         /* CABEÇALHO */
-        header { text-align: center; padding: 20px; border-bottom: 2px solid var(--neon-green); background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
+        header { text-align: center; padding: 20px; border-bottom: 2px solid var(--neon-green); background: var(--panel); backdrop-filter: blur(5px); transition: 0.3s; }
         h1 { margin: 0; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
         #relogio { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); margin: 10px 0; }
         
@@ -44,7 +65,7 @@
 
         .nav-btn:hover {
             background: var(--neon-green);
-            color: #000;
+            color: var(--bg); /* Inverte a cor baseada no tema */
             box-shadow: 0 0 15px var(--neon-green);
         }
 
@@ -54,26 +75,26 @@
 
         /* BUSCA */
         .search-box { margin: 20px auto; max-width: 90%; text-align: center; }
-        #busca-input { width: 100%; max-width: 400px; padding: 10px; background: #000; border: 1px solid var(--neon-purple); color: var(--neon-green); outline: none; border-radius: 5px; }
+        #busca-input { width: 100%; max-width: 400px; padding: 10px; background: var(--bg); border: 1px solid var(--neon-purple); color: var(--neon-green); outline: none; border-radius: 5px; transition: 0.3s; }
 
         /* GRID */
         .container { padding: 20px; max-width: 800px; margin: 0 auto; min-height: 60vh; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         
         /* CARDS */
-        .card { background: var(--panel); border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
         .card:hover { border-color: var(--neon-green); transform: translateY(-5px); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
         
         /* IMAGEM DO CARD */
-        .card-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid #333; display: block; background: #222; }
+        .card-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid var(--border); display: block; background: #222; }
         
         .card-body { padding: 15px; }
-        .card h2 { color: #fff; font-size: 1.2rem; margin: 5px 0; }
+        .card h2 { color: var(--text); font-size: 1.2rem; margin: 5px 0; }
         .card span { font-size: 0.8rem; color: var(--neon-purple); display: block; margin-bottom: 5px; }
         
         /* LIKES */
-        .like-area { margin-top: 10px; display: flex; align-items: center; font-size: 0.9rem; color: #ccc; }
-        .btn-like { background: none; border: 1px solid #333; color: #ccc; cursor: pointer; padding: 5px 12px; border-radius: 20px; margin-right: 5px; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+        .like-area { margin-top: 10px; display: flex; align-items: center; font-size: 0.9rem; color: #888; }
+        .btn-like { background: none; border: 1px solid var(--border); color: #888; cursor: pointer; padding: 5px 12px; border-radius: 20px; margin-right: 5px; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
         .btn-like:hover { border-color: #ff4040; color: #ff4040; }
         .btn-like.curtido { background: rgba(255, 64, 64, 0.2); border-color: #ff4040; color: #ff4040; cursor: default; }
 
@@ -82,27 +103,29 @@
         .btn-voltar { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 10px 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         
         /* Conteúdo Overlay */
-        .overlay-content h2 { color: var(--neon-green); border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .overlay-content h2 { color: var(--neon-green); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .overlay-content img { max-width: 100%; border-radius: 5px; margin: 10px 0; border: 1px solid var(--neon-purple); }
-        .overlay-content p { line-height: 1.6; color: #ccc; margin-bottom: 15px; }
-        pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #333; color: var(--neon-green); }
+        .overlay-content p { line-height: 1.6; color: var(--text); margin-bottom: 15px; }
+        
+        /* Código (Pre) sempre escuro para parecer terminal */
+        pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #333; color: #00ff41; }
 
         /* BOTÃO PIX */
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); cursor: pointer; border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         /* COOKIES */
-        #cookie-banner { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background-color: #000; border: 1px solid var(--neon-green); padding: 20px; z-index: 200; border-radius: 10px; text-align: center; }
+        #cookie-banner { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background-color: var(--panel); border: 1px solid var(--neon-green); padding: 20px; z-index: 200; border-radius: 10px; text-align: center; color: var(--text); }
         .cookie-btn { padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; border-radius: 5px; }
         .btn-accept { background: var(--neon-green); border: none; }
-        .btn-deny { background: transparent; border: 1px solid #555; color: #fff; }
+        .btn-deny { background: transparent; border: 1px solid #555; color: var(--text); }
 
         /* RODAPÉ */
-        footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--neon-green); background: #000; margin-top: 50px; position: relative; z-index: 10; }
+        footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--neon-green); background: var(--panel); margin-top: 50px; position: relative; z-index: 10; transition: 0.3s; }
         .social-links { margin: 15px 0; }
         .social-links a { color: var(--neon-purple); text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; }
         .social-links a:hover { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); letter-spacing: 2px; }
-        .copyright { color: #444; font-size: 0.8rem; }
+        .copyright { color: #888; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -119,6 +142,7 @@
             </div>
 
             <div class="nav-bar">
+                <button class="nav-btn" onclick="window.alternarTema()">[ 🌗 TEMA ]</button>
                 <button class="nav-btn" onclick="window.abrirSobre()">[ 💾 SOBRE ]</button>
                 <a href="mailto:dan2050mg@gmail.com?subject=Ideia para o Linux Lab&body=Ola Danilo, tenho uma sugestão de post:" class="nav-btn">[ 💡 ENVIAR IDEIA ]</a>
             </div>
@@ -134,7 +158,7 @@
         </div>
 
         <footer>
-            <p style="color: #fff; font-weight: bold;">LINUX_LAB_ // SYSTEM.ROOT</p>
+            <p style="font-weight: bold;">LINUX_LAB_ // SYSTEM.ROOT</p>
             <div class="social-links">
                 <a href="https://x.com/DaniloGardiano" target="_blank">TWITTER</a>
             </div>
@@ -190,23 +214,62 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- NAVEGAÇÃO CORRIGIDA (HISTORY API) ---
-        
-        // Abre o SOBRE e adiciona no histórico
+        // --- SISTEMA DE TEMA (CLARO/ESCURO) ---
+        window.alternarTema = function() {
+            document.body.classList.toggle('light-mode');
+            // Salva na memória a escolha
+            const ehClaro = document.body.classList.contains('light-mode');
+            localStorage.setItem('temaLinuxLab', ehClaro ? 'claro' : 'escuro');
+        };
+
+        // Verifica o tema salvo ao abrir
+        if (localStorage.getItem('temaLinuxLab') === 'claro') {
+            document.body.classList.add('light-mode');
+        }
+
+        // --- NAVEGAÇÃO ---
         window.abrirSobre = function() {
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('sobre-overlay').style.display = 'block';
             window.scrollTo(0,0);
-            // CRUCIAL: Avisa o navegador que mudamos de página
             history.pushState({page: 'sobre'}, null, '#sobre');
         };
 
-        // Função que reseta a tela para a Home (chamada pelo botão voltar do celular)
         function resetarParaHome() {
             document.getElementById('leitura-overlay').style.display = 'none';
             document.getElementById('sobre-overlay').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
         }
+
+        // --- MATRIX RAIN INTELIGENTE ---
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const letters = "010101LINUXCODEHACKERGLITCH";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+        
+        function drawMatrix() {
+            // Pega a cor do rastro baseado no tema atual (Preto no escuro, Branco no claro)
+            const corRastro = getComputedStyle(document.documentElement).getPropertyValue('--matrix-trail').trim();
+            const corLetra = getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim();
+
+            ctx.fillStyle = corRastro; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = corLetra; 
+            ctx.font = fontSize + "px monospace";
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
 
         // --- EFEITO DIGITAÇÃO ---
         const mensagens = [
@@ -244,43 +307,17 @@
         window.curtirPost = async function(event, id) {
             event.stopPropagation();
             if (jaCurtiu(id)) { alert("Você já curtiu este post! 👍"); return; }
-            
             const postRef = doc(db, "artigos", id);
             await updateDoc(postRef, { likes: increment(1) });
             salvarLike(id);
-            
             confetti({ particleCount: 50, spread: 60, origin: { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight } });
         };
-
-        // --- MATRIX ---
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const letters = "010101LINUXCODEHACKERGLITCH";
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0";
-            ctx.font = fontSize + "px monospace";
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 50);
 
         // --- RENDERIZAÇÃO ---
         function iniciarSincronizacao() {
             const grid = document.getElementById('grid-posts');
             const loading = document.getElementById('loading');
             const q = query(collection(db, "artigos"));
-            
             onSnapshot(q, (snapshot) => {
                 listaArtigos = [];
                 snapshot.forEach((doc) => {
@@ -302,12 +339,10 @@
                 const cat = post.categoria || 'Geral';
                 const tit = post.titulo || 'Sem Título';
                 const likes = post.likes || 0;
-                
                 let imagemHTML = "";
                 if (post.imagem && post.imagem.trim() !== "") {
                     imagemHTML = `<img src="${post.imagem}" class="card-img" onerror="this.style.display='none'">`;
                 }
-
                 const userCurtiu = jaCurtiu(post.id);
                 const classeBotao = userCurtiu ? "btn-like curtido" : "btn-like";
                 const icone = userCurtiu ? "❤️" : "🤍";
@@ -327,7 +362,6 @@
             });
         }
 
-        // Abre o POST e adiciona no histórico
         window.abrirPost = function(id) {
             const post = listaArtigos.find(p => p.id === id);
             if (post) {
@@ -341,11 +375,11 @@
                 document.getElementById('home-view').style.display = 'none';
                 document.getElementById('leitura-overlay').style.display = 'block';
                 window.scrollTo(0,0);
-                // CRUCIAL: Avisa o navegador
                 history.pushState({page: 'leitura'}, null, '#leitura');
             }
         };
 
+        window.fecharPost = function() { window.fecharOverlays(); };
         window.filtrarPosts = function() {
             const termo = document.getElementById('busca-input').value.toLowerCase();
             const filtrados = listaArtigos.filter(p => p.titulo.toLowerCase().includes(termo));
@@ -363,12 +397,7 @@
         window.recusarCookies = () => { localStorage.setItem('linuxLabCookies','no'); document.getElementById('cookie-banner').style.display='none'; }
         
         setInterval(() => document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
-        
-        // --- EVENTO MÁGICO DO BOTÃO VOLTAR ---
-        window.addEventListener('popstate', () => {
-            // Quando aperta voltar, reseta tudo para a Home
-            resetarParaHome();
-        });
+        window.addEventListener('popstate', () => { resetarParaHome(); });
 
         iniciarSincronizacao();
     </script>
