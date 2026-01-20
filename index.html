@@ -152,30 +152,41 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- IP TRACKER (ESPIÃO) ---
+        // --- GEO-TRACKER (NOVO) ---
         async function rastrearIP() {
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
+                // API mais completa: IP + CIDADE + PAÍS
+                const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
-                const ip = data.ip;
-                document.getElementById('ip-display').innerText = `CLIENT IP: ${ip} [TRACKED]`;
-                document.getElementById('terminal-ip-log').innerHTML = `> CONNECTION ESTABLISHED.<br>> CLIENT IP: <span style="color:#ff0055">${ip}</span><br>> ACCESS LOGGED.`;
                 
-                // SALVAR NO BANCO DE DADOS (SILENCIOSAMENTE)
-                // Verifica se já não salvamos hoje pra não spammar o banco
+                const ip = data.ip || 'Desconhecido';
+                const local = `${data.city || '?'} - ${data.region_code || '?'}`;
+                const pais = data.country_code || '?';
+
+                document.getElementById('ip-display').innerText = `NODE: ${ip} [${local}]`;
+                document.getElementById('terminal-ip-log').innerHTML = `> CONNECTION ESTABLISHED.<br>> TARGET: <span style="color:#ff0055">${ip}</span><br>> LOC: ${local}, ${pais}`;
+                
+                // SALVAR NO BANCO DE DADOS
                 const hoje = new Date().toISOString().slice(0,10);
                 const visitado = localStorage.getItem('logData');
                 
                 if (visitado !== hoje) {
                     await addDoc(collection(db, "logs"), {
                         ip: ip,
+                        local: local, // Salvando a localização
                         data: new Date().toISOString(),
                         agent: navigator.userAgent
                     });
                     localStorage.setItem('logData', hoje);
                 }
             } catch (e) {
-                document.getElementById('ip-display').innerText = "CLIENT IP: HIDDEN [PROXY DETECTED]";
+                console.log("Erro geo", e);
+                // Fallback para o antigo se o novo falhar
+                try {
+                    const res2 = await fetch('https://api.ipify.org?format=json');
+                    const data2 = await res2.json();
+                    document.getElementById('ip-display').innerText = `CLIENT IP: ${data2.ip}`;
+                } catch(err) {}
             }
         }
         rastrearIP();
