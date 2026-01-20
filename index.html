@@ -56,9 +56,27 @@
         .social-links a:hover { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); letter-spacing: 2px; }
         .copyright { color: #888; font-size: 0.8rem; }
         #ip-display { font-size: 0.8rem; color: var(--neon-purple); margin-top: 10px; letter-spacing: 1px; }
+
+        /* --- TELA HACKEADA (NOVO) --- */
+        #hacked-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: red; z-index: 999999;
+            align-items: center; justify-content: center; flex-direction: column;
+            text-align: center; color: black; font-weight: bold;
+        }
+        .hacked-msg { font-size: 3rem; background: black; color: red; padding: 20px; border: 5px solid yellow; animation: shake 0.2s infinite; }
+        .hacked-detail { font-size: 1.5rem; margin-top: 20px; background: white; padding: 10px; }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+
     </style>
 </head>
 <body>
+    
+    <div id="hacked-overlay">
+        <div class="hacked-msg">⚠️ SISTEMA COMPROMETIDO ⚠️</div>
+        <div class="hacked-detail">SEUS DADOS FORAM TRANSFERIDOS.<br>NÃO DESLIGUE O DISPOSITIVO.</div>
+    </div>
+
     <canvas id="matrix"></canvas>
     <div id="secret-terminal">
         <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">
@@ -152,46 +170,57 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- GEO-TRACKER (NOVO) ---
         async function rastrearIP() {
             try {
-                // API mais completa: IP + CIDADE + PAÍS
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
-                
                 const ip = data.ip || 'Desconhecido';
                 const local = `${data.city || '?'} - ${data.region_code || '?'}`;
-                const pais = data.country_code || '?';
-
                 document.getElementById('ip-display').innerText = `NODE: ${ip} [${local}]`;
-                document.getElementById('terminal-ip-log').innerHTML = `> CONNECTION ESTABLISHED.<br>> TARGET: <span style="color:#ff0055">${ip}</span><br>> LOC: ${local}, ${pais}`;
-                
-                // SALVAR NO BANCO DE DADOS
+                document.getElementById('terminal-ip-log').innerHTML = `> CONNECTION ESTABLISHED.<br>> TARGET: <span style="color:#ff0055">${ip}</span><br>> LOC: ${local}`;
                 const hoje = new Date().toISOString().slice(0,10);
                 const visitado = localStorage.getItem('logData');
-                
                 if (visitado !== hoje) {
                     await addDoc(collection(db, "logs"), {
                         ip: ip,
-                        local: local, // Salvando a localização
+                        local: local, 
                         data: new Date().toISOString(),
                         agent: navigator.userAgent
                     });
                     localStorage.setItem('logData', hoje);
                 }
             } catch (e) {
-                console.log("Erro geo", e);
-                // Fallback para o antigo se o novo falhar
-                try {
-                    const res2 = await fetch('https://api.ipify.org?format=json');
-                    const data2 = await res2.json();
-                    document.getElementById('ip-display').innerText = `CLIENT IP: ${data2.ip}`;
-                } catch(err) {}
+                try { const res2 = await fetch('https://api.ipify.org?format=json'); const data2 = await res2.json(); document.getElementById('ip-display').innerText = `CLIENT IP: ${data2.ip}`; } catch(err) {}
             }
         }
         rastrearIP();
 
-        // --- SISTEMA DE SOM ---
+        // --- SISTEMA DE CONTROLE REMOTO (NOVO) ---
+        // Escuta o arquivo de configuração global
+        onSnapshot(doc(db, "sistema", "config"), (doc) => {
+            const config = doc.data();
+            const overlay = document.getElementById('hacked-overlay');
+            
+            if (config && config.modo === 'HACKED') {
+                // MODO: ATAQUE
+                overlay.style.display = 'flex';
+                // Toca som de alerta se tiver ativado
+                if(somAtivado) {
+                    const osc = audioCtx.createOscillator(); osc.frequency.value = 500; osc.type = 'sawtooth';
+                    osc.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 1);
+                }
+            } else if (config && config.modo === 'GLITCH') {
+                // MODO: GLITCH
+                document.body.style.filter = "invert(1) hue-rotate(180deg)";
+                document.body.style.transform = "skewX(10deg)";
+            } else {
+                // MODO: NORMAL
+                overlay.style.display = 'none';
+                document.body.style.filter = "none";
+                document.body.style.transform = "none";
+            }
+        });
+
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         let somAtivado = false; 
@@ -205,20 +234,15 @@
         function anexarSons() { document.querySelectorAll('button, a, .card, input').forEach(el => { el.addEventListener('mouseenter', window.playHover); el.addEventListener('click', window.playClick); }); }
         setTimeout(anexarSons, 2000); 
 
-        // --- KONAMI CODE ---
         const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
         let konamiIndex = 0;
         document.addEventListener('keydown', (e) => { if (e.key === konamiCode[konamiIndex]) { konamiIndex++; if (konamiIndex === konamiCode.length) { alert("👾 MODO GOD ATIVADO! 👾"); document.documentElement.style.setProperty('--neon-green', '#ff00ff'); confetti({ particleCount: 500, spread: 200, origin: { y: 0.6 } }); window.playClick(); konamiIndex = 0; } } else { konamiIndex = 0; } });
-
-        // --- NAVEGAÇÃO ---
         function abrirOverlay(id, hash) { document.getElementById('home-view').style.display = 'none'; document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none'); document.getElementById(id).style.display = 'block'; window.scrollTo(0,0); history.pushState({page: id}, null, hash); window.playClick(); }
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
         window.abrirTutorial = () => { abrirOverlay('tutorial-overlay', '#ajuda'); if (localStorage.getItem('vistoTutorial')) { document.getElementById('btn-sessao').style.display = 'none'; } else { document.getElementById('btn-sessao').style.display = 'inline-block'; } };
         window.iniciarSessao = () => { localStorage.setItem('vistoTutorial', 'sim'); window.playClick(); history.back(); };
         function resetarParaHome() { document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none'); document.getElementById('home-view').style.display = 'block'; }
         if (!localStorage.getItem('vistoTutorial')) { setTimeout(() => { window.abrirTutorial(); }, 1500); }
-
-        // --- TERMINAL ---
         window.toggleTerminal = function() { const term = document.getElementById('secret-terminal'); const input = document.getElementById('terminal-input'); if (window.getComputedStyle(term).display === 'none') { term.style.display = 'block'; input.focus(); } else { term.style.display = 'none'; } };
         document.addEventListener('keydown', (e) => { if (e.key === "'" || e.key === "`") { e.preventDefault(); window.toggleTerminal(); } });
         function mudarCorMatrix(cor) { document.documentElement.style.setProperty('--neon-green', cor); localStorage.setItem('matrixColor', cor); }
@@ -226,20 +250,14 @@
         const terminalInput = document.getElementById('terminal-input');
         const terminalOutput = document.getElementById('terminal-output');
         terminalInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { window.playClick(); const comando = this.value.toLowerCase().trim(); this.value = ''; terminalOutput.innerHTML += `<div style="color:var(--neon-green)">root@linuxlab:~$ ${comando}</div>`; let resposta = ""; if (comando === 'exit') { window.toggleTerminal(); return; } else if (comando === 'help') resposta = "Comandos: help, clear, date, reboot, matrix red/blue/default, whoami, exit"; else if (comando === 'clear') { terminalOutput.innerHTML = "Linux Lab Shell v1.0<br>"; return; } else if (comando === 'date') resposta = new Date().toString(); else if (comando === 'reboot') { resposta = "Reiniciando..."; setTimeout(() => location.reload(), 1000); } else if (comando === 'whoami') resposta = "Visitante (Guest)"; else if (comando === 'matrix red') { mudarCorMatrix('#ff0000'); resposta = "Alerta Vermelho! 🔴"; } else if (comando === 'matrix blue') { mudarCorMatrix('#00eeff'); resposta = "Resfriamento ativo. 🔵"; } else if (comando === 'matrix green' || comando === 'matrix default') { mudarCorMatrix('#00ff41'); resposta = "Padrão restaurado. 🟢"; } else if (comando !== '') resposta = `Comando desconhecido: ${comando}`; if(resposta) terminalOutput.innerHTML += `<div style="color:#eee; margin-bottom:10px;">${resposta}</div>`; document.getElementById('secret-terminal').scrollTop = document.getElementById('secret-terminal').scrollHeight; } });
-
-        // --- TEMA E MATRIX ---
         window.alternarTema = function() { document.body.classList.toggle('light-mode'); window.playClick(); localStorage.setItem('temaLinuxLab', document.body.classList.contains('light-mode') ? 'claro' : 'escuro'); };
         if (localStorage.getItem('temaLinuxLab') === 'claro') document.body.classList.add('light-mode');
         const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight; const letters = "010101LINUXCODEHACKERGLITCH"; const fontSize = 14; const columns = canvas.width / fontSize; const drops = Array(Math.floor(columns)).fill(1);
         function drawMatrix() { const corRastro = getComputedStyle(document.documentElement).getPropertyValue('--matrix-trail').trim(); const corLetra = getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim(); ctx.fillStyle = corRastro; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = corLetra; ctx.font = fontSize + "px monospace"; for (let i = 0; i < drops.length; i++) { const text = letters[Math.floor(Math.random() * letters.length)]; ctx.fillText(text, i * fontSize, drops[i] * fontSize); if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }
         setInterval(drawMatrix, 50);
-
-        // --- DIGITAÇÃO ---
         const mensagens = [ "Iniciando Kernel v5.1...", "Carregando módulos...", "Conectando ao Firebase...", "Bem-vindo ao Linux Lab." ];
         async function digitarTerminal() { const elemento = document.getElementById('terminal-typing'); for (let i = 0; i < mensagens.length; i++) { const frase = mensagens[i]; elemento.innerText = "> "; for (let letra of frase) { elemento.innerText += letra; await new Promise(r => setTimeout(r, 50)); } await new Promise(r => setTimeout(r, 1000)); } elemento.innerHTML = "> Sistema Online <span class='cursor-blink'>_</span>"; }
         digitarTerminal();
-
-        // --- CORE ---
         function jaCurtiu(id) { return JSON.parse(localStorage.getItem('meusLikes') || '[]').includes(id); }
         function salvarLike(id) { const likes = JSON.parse(localStorage.getItem('meusLikes') || '[]'); likes.push(id); localStorage.setItem('meusLikes', JSON.stringify(likes)); }
         window.curtirPost = async function(event, id) { event.stopPropagation(); if (jaCurtiu(id)) { alert("Já curtiu! 👍"); return; } window.playClick(); await updateDoc(doc(db, "artigos", id), { likes: increment(1) }); salvarLike(id); confetti({ particleCount: 50, spread: 60, origin: { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight } }); };
