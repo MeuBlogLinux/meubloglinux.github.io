@@ -58,23 +58,8 @@
         
         pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #333; color: #00ff41; }
         
-        /* TERMINAL (AJUSTADO PARA MOBILE: 35vh de altura) */
-        #secret-terminal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 35vh; /* REDUZIDO PARA FICAR MELHOR NO CELULAR */
-            background: rgba(0,0,0,0.95); 
-            border-bottom: 2px solid var(--neon-green); 
-            z-index: 999; 
-            padding: 20px; 
-            box-sizing: border-box; 
-            overflow-y: auto; 
-            font-family: 'Courier New', monospace; 
-            text-align: left; 
-        }
+        /* TERMINAL OTIMIZADO (35vh e z-index alto) */
+        #secret-terminal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 35vh; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--neon-green); z-index: 9999; padding: 20px; box-sizing: border-box; overflow-y: auto; font-family: 'Courier New', monospace; text-align: left; }
 
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); cursor: pointer; border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -179,6 +164,7 @@
                 <ul>
                     <li><code>matrix red</code> (Muda a cor para Alerta Vermelho)</li>
                     <li><code>matrix blue</code> (Muda para Azul)</li>
+                    <li><code>matrix default</code> (Restaura o Verde)</li>
                     <li><code>reboot</code> (Reinicia a página)</li>
                     <li><code>date</code> (Mostra o horário do servidor)</li>
                     <li><code>whoami</code> (Descubra quem você é)</li>
@@ -237,19 +223,30 @@
 
         // --- VERIFICAÇÃO AUTOMÁTICA DE NOVATO ---
         if (!localStorage.getItem('vistoTutorial')) {
-            setTimeout(() => {
-                window.abrirTutorial();
-            }, 1500);
+            setTimeout(() => { window.abrirTutorial(); }, 1500);
         }
 
-        // --- TERMINAL ---
+        // --- TERMINAL OTIMIZADO ---
         window.toggleTerminal = function() {
             const term = document.getElementById('secret-terminal');
             const input = document.getElementById('terminal-input');
-            if (term.style.display === 'none') { term.style.display = 'block'; input.focus(); } 
-            else { term.style.display = 'none'; }
+            // Correção: Usa getComputedStyle para garantir que sabe se está visível ou não no primeiro clique
+            if (window.getComputedStyle(term).display === 'none') { 
+                term.style.display = 'block'; 
+                input.focus(); 
+            } else { 
+                term.style.display = 'none'; 
+            }
         };
         document.addEventListener('keydown', (e) => { if (e.key === "'" || e.key === "`") { e.preventDefault(); window.toggleTerminal(); } });
+
+        // --- SISTEMA DE CORES PERSISTENTES ---
+        function mudarCorMatrix(cor) {
+            document.documentElement.style.setProperty('--neon-green', cor);
+            localStorage.setItem('matrixColor', cor);
+        }
+        // Aplica cor salva ao iniciar
+        if(localStorage.getItem('matrixColor')) mudarCorMatrix(localStorage.getItem('matrixColor'));
 
         const terminalInput = document.getElementById('terminal-input');
         const terminalOutput = document.getElementById('terminal-output');
@@ -259,17 +256,18 @@
                 this.value = ''; 
                 terminalOutput.innerHTML += `<div style="color:var(--neon-green)">root@linuxlab:~$ ${comando}</div>`;
                 let resposta = "";
-                // COMANDO EXIT ADICIONADO AQUI
+                
                 if (comando === 'exit') { window.toggleTerminal(); return; }
-                else if (comando === 'help') resposta = "Comandos: help, clear, date, reboot, matrix red/blue/green, whoami, exit";
+                else if (comando === 'help') resposta = "Comandos: help, clear, date, reboot, matrix red/blue/default, whoami, exit";
                 else if (comando === 'clear') { terminalOutput.innerHTML = "Linux Lab Shell v1.0<br>"; return; }
                 else if (comando === 'date') resposta = new Date().toString();
                 else if (comando === 'reboot') { resposta = "Reiniciando..."; setTimeout(() => location.reload(), 1000); }
                 else if (comando === 'whoami') resposta = "Visitante (Guest)";
-                else if (comando === 'matrix red') { document.documentElement.style.setProperty('--neon-green', '#ff0000'); resposta = "Alerta Vermelho! 🔴"; }
-                else if (comando === 'matrix blue') { document.documentElement.style.setProperty('--neon-green', '#00eeff'); resposta = "Resfriamento ativo. 🔵"; }
-                else if (comando === 'matrix green') { document.documentElement.style.setProperty('--neon-green', '#00ff41'); resposta = "Padrão restaurado. 🟢"; }
+                else if (comando === 'matrix red') { mudarCorMatrix('#ff0000'); resposta = "Alerta Vermelho! 🔴"; }
+                else if (comando === 'matrix blue') { mudarCorMatrix('#00eeff'); resposta = "Resfriamento ativo. 🔵"; }
+                else if (comando === 'matrix green' || comando === 'matrix default') { mudarCorMatrix('#00ff41'); resposta = "Padrão restaurado. 🟢"; }
                 else if (comando !== '') resposta = `Comando desconhecido: ${comando}`;
+                
                 if(resposta) terminalOutput.innerHTML += `<div style="color:#eee; margin-bottom:10px;">${resposta}</div>`;
                 document.getElementById('secret-terminal').scrollTop = document.getElementById('secret-terminal').scrollHeight;
             }
