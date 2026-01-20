@@ -179,7 +179,8 @@
             </div>
 
             <p>Explore, aprenda e divirta-se. O sistema é seu.</p>
-            <button onclick="history.back()" style="background:var(--neon-green); border:none; padding:10px 20px; font-weight:bold; cursor:pointer; margin-top:10px;">INICIAR SESSÃO ></button>
+            
+            <button id="btn-sessao" onclick="window.iniciarSessao()" style="background:var(--neon-green); border:none; padding:10px 20px; font-weight:bold; cursor:pointer; margin-top:10px;">INICIAR SESSÃO ></button>
         </div>
     </div>
 
@@ -200,42 +201,35 @@
         const db = getFirestore(app);
         let listaArtigos = [];
 
-        // --- SISTEMA DE SOM (WEB AUDIO API) ---
-        // Cria um contexto de áudio (o "gerador" de som)
+        // --- SISTEMA DE SOM ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
-        let somAtivado = false; // Começa mudo por padrão para não assustar
+        let somAtivado = false; 
 
-        // Função para criar um "bip" sintético
         function beep(duration, frequency, volume, type, callback) {
             if (!somAtivado) return;
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            
-            if (volume) { gainNode.gain.value = volume; }
-            if (frequency) { oscillator.frequency.value = frequency; }
-            if (type) { oscillator.type = type; }
-            
+            if (volume) gainNode.gain.value = volume;
+            if (frequency) oscillator.frequency.value = frequency;
+            if (type) oscillator.type = type;
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
-            if (callback) { oscillator.onended = callback; }
+            if (callback) oscillator.onended = callback;
         }
 
-        window.playHover = () => beep(50, 800, 0.05, "sine"); // Som agudo e curto (Hover)
-        window.playClick = () => beep(100, 400, 0.1, "square"); // Som mais "robótico" (Click)
+        window.playHover = () => beep(50, 800, 0.05, "sine");
+        window.playClick = () => beep(100, 400, 0.1, "square");
 
-        // Alternar Mudo/Som
         window.alternarSom = function() {
             somAtivado = !somAtivado;
             const btn = document.getElementById('btn-sound');
             if (somAtivado) {
                 btn.innerText = "[ 🔊 SOM ]";
                 btn.style.borderColor = "var(--neon-green)";
-                window.playClick(); // Toca um som pra confirmar
-                // Tenta iniciar o contexto se estiver suspenso (regra de navegadores)
+                window.playClick();
                 if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             } else {
                 btn.innerText = "[ 🔇 SOM ]";
@@ -244,13 +238,11 @@
             localStorage.setItem('somLinuxLab', somAtivado ? 'on' : 'off');
         };
 
-        // Carregar preferência de som
         if (localStorage.getItem('somLinuxLab') === 'on') {
             somAtivado = true;
             document.getElementById('btn-sound').innerText = "[ 🔊 SOM ]";
         }
 
-        // Adicionar sons a todos os botões automaticamente
         function anexarSons() {
             const interativos = document.querySelectorAll('button, a, .card, input');
             interativos.forEach(el => {
@@ -258,27 +250,22 @@
                 el.addEventListener('click', window.playClick);
             });
         }
-        // Chama a função depois que tudo carregar e sempre que renderizar posts
         setTimeout(anexarSons, 2000); 
 
-
-        // --- KONAMI CODE (EASTER EGG) ---
+        // --- KONAMI CODE ---
         const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
         let konamiIndex = 0;
         document.addEventListener('keydown', (e) => {
             if (e.key === konamiCode[konamiIndex]) {
                 konamiIndex++;
                 if (konamiIndex === konamiCode.length) {
-                    // CÓDIGO ATIVADO!
                     alert("👾 MODO GOD ATIVADO! 👾");
-                    document.documentElement.style.setProperty('--neon-green', '#ff00ff'); // Cor rosa neon
+                    document.documentElement.style.setProperty('--neon-green', '#ff00ff'); 
                     confetti({ particleCount: 500, spread: 200, origin: { y: 0.6 } });
                     window.playClick();
                     konamiIndex = 0;
                 }
-            } else {
-                konamiIndex = 0;
-            }
+            } else { konamiIndex = 0; }
         });
 
         // --- SISTEMA DE NAVEGAÇÃO ---
@@ -292,9 +279,23 @@
         }
 
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
+        
+        // Função para abrir o tutorial (Verifica se mostra o botão ou não)
         window.abrirTutorial = () => {
             abrirOverlay('tutorial-overlay', '#ajuda');
-            localStorage.setItem('vistoTutorial', 'sim'); 
+            // Se já viu o tutorial antes, esconde o botão "Iniciar Sessão"
+            if (localStorage.getItem('vistoTutorial')) {
+                document.getElementById('btn-sessao').style.display = 'none';
+            } else {
+                document.getElementById('btn-sessao').style.display = 'inline-block';
+            }
+        };
+
+        // Função do Botão "INICIAR SESSÃO" (Só aparece na 1ª vez)
+        window.iniciarSessao = () => {
+            localStorage.setItem('vistoTutorial', 'sim');
+            window.playClick();
+            history.back(); // Fecha o overlay
         };
 
         function resetarParaHome() {
@@ -302,6 +303,7 @@
             document.getElementById('home-view').style.display = 'block';
         }
 
+        // Abre automaticamente se nunca viu
         if (!localStorage.getItem('vistoTutorial')) {
             setTimeout(() => { window.abrirTutorial(); }, 1500);
         }
@@ -319,7 +321,7 @@
         };
         document.addEventListener('keydown', (e) => { if (e.key === "'" || e.key === "`") { e.preventDefault(); window.toggleTerminal(); } });
 
-        // --- SISTEMA DE CORES PERSISTENTES ---
+        // --- CORES ---
         function mudarCorMatrix(cor) {
             document.documentElement.style.setProperty('--neon-green', cor);
             localStorage.setItem('matrixColor', cor);
@@ -427,7 +429,7 @@
                 const icone = jaCurtiu(post.id) ? "❤️" : "🤍";
                 grid.innerHTML += `<div class="card" onclick="window.abrirPost('${post.id}')">${img}<div class="card-body"><span>// ${post.categoria || 'Geral'}</span><h2>${post.titulo}</h2><div class="like-area"><button class="${classeBtn}" onclick="window.curtirPost(event, '${post.id}')">${icone} ${post.likes || 0}</button></div></div></div>`;
             });
-            anexarSons(); // Reaplica os sons aos novos elementos
+            anexarSons();
         }
 
         window.abrirPost = function(id) {
