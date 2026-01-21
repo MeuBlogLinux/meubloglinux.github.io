@@ -68,8 +68,29 @@
         .comment-form textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px; font-family: monospace; resize: vertical; }
         .btn-comment { background: var(--neon-purple); color: #fff; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer; font-weight: bold; }
 
+        /* TERMINAL OTIMIZADO (GPU) */
+        #secret-terminal { 
+            display: block; /* Sempre renderizado, mas escondido */
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 35vh; 
+            background: rgba(0,0,0,0.98); 
+            border-bottom: 2px solid var(--neon-green); 
+            z-index: 9999; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            overflow-y: auto; 
+            text-align: left;
+            /* Performance Magic */
+            transform: translateY(-150%); /* Escondido pra cima */
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Animação suave */
+            will-change: transform;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #secret-terminal.open {
+            transform: translateY(0); /* Desliza pra baixo */
+        }
+
         /* EXTRAS */
-        #secret-terminal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 35vh; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--neon-green); z-index: 9999; padding: 20px; box-sizing: border-box; overflow-y: auto; text-align: left; }
         .btn-pix { position: fixed; bottom: 20px; right: 20px; background: var(--neon-purple); color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px rgba(157, 0, 255, 0.5); border: none; z-index: 50; animation: pulsando 2s infinite; }
         @keyframes pulsando { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
@@ -82,7 +103,7 @@
     <canvas id="matrix"></canvas>
 
     <div id="secret-terminal">
-        <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">Linux Lab Shell v5.0 (Silent Mode)<br>Digite 'help' para ver os comandos.<br></div>
+        <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">Linux Lab Shell v6.0 (GPU Accelerated)<br>Digite 'help' para ver os comandos.<br></div>
         <div style="display:flex;">
             <span style="color:var(--neon-green); margin-right:10px;">root@linuxlab:~$</span>
             <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; width:100%; outline:none; font-family:'Courier New', monospace;" autocomplete="off">
@@ -214,8 +235,15 @@
             navigator.clipboard.writeText("pixlinuxblog@gmail.com").then(() => { confetti({particleCount:150}); alert("✅ PIX copiado!"); }).catch(() => prompt("Copie:", "pixlinuxblog@gmail.com"));
         };
 
-        // Terminal
-        window.toggleTerminal = () => { const t = document.getElementById('secret-terminal'); t.style.display = (t.style.display==='none')?'block':'none'; if(t.style.display==='block') document.getElementById('terminal-input').focus(); };
+        // Terminal (GPU ACCELERATED)
+        window.toggleTerminal = () => { 
+            const t = document.getElementById('secret-terminal'); 
+            t.classList.toggle('open');
+            if(t.classList.contains('open')) {
+                // Pequeno delay pro foco não travar a animação em celulares
+                setTimeout(() => document.getElementById('terminal-input').focus(), 300);
+            }
+        };
         document.addEventListener('keydown', (e) => { if(e.key==="'"||e.key==="`"){ e.preventDefault(); window.toggleTerminal(); } });
         
         const terminalInput = document.getElementById('terminal-input');
