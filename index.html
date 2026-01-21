@@ -6,7 +6,6 @@
     <title>Linux Lab</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
@@ -14,37 +13,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
 
     <style>
-        /* --- CORE STYLES & TEMAS --- */
+        /* --- DEFINIÇÃO DE CORES (TEMAS) --- */
         :root { 
             --bg: #050505; 
             --panel: rgba(17, 17, 17, 0.95); 
             --text: #eee; 
             --border: #333;
             
-            /* TEMA 1: CLASSIC (Verde/Roxo) */
+            /* TEMA PADRÃO (Verde/Roxo) */
             --matrix-color: #00ff41; 
             --accent-color: #9d00ff; 
         }
 
-        /* TEMA 2: INFECTED (Verde/Vermelho) */
+        /* TEMA 2: INFECTED (Verde Tóxico/Vermelho) */
         body.theme-infected {
-            --matrix-color: #39ff14; /* Verde Neon */
-            --accent-color: #ff003c; /* Vermelho Cyber */
+            --matrix-color: #39ff14; 
+            --accent-color: #ff003c; 
         }
 
         /* TEMA 3: CYBER CITY (Amarelo/Azul) */
         body.theme-cyber {
-            --matrix-color: #fcee0a; /* Amarelo Cyberpunk */
-            --accent-color: #00f0ff; /* Azul Cyan */
+            --matrix-color: #fcee0a; 
+            --accent-color: #00f0ff; 
         }
 
-        /* TEMA 4: FROST (Branco/Azul Escuro) */
+        /* TEMA 4: FROST (Branco/Azul) */
         body.theme-frost {
-            --matrix-color: #ffffff; /* Branco Puro */
-            --accent-color: #0066ff; /* Azul Royal */
+            --matrix-color: #ffffff; 
+            --accent-color: #0066ff; 
         }
 
-        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 80px; overflow-x: hidden; transition: 0.3s; cursor: crosshair; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding-bottom: 80px; overflow-x: hidden; transition: color 0.3s, border-color 0.3s; cursor: crosshair; }
         
         button, a, .card, input, textarea, label { cursor: alias; }
         canvas#matrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
@@ -76,6 +75,7 @@
             overflow: hidden;
             display: flex; align-items: center; justify-content: space-between; gap: 20px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: 0.3s;
         }
         #scanner-widget::before { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, var(--matrix-color), transparent); opacity: 0.1; animation: scanLine 3s infinite linear; pointer-events: none; }
         @keyframes scanLine { 0% { left: -100%; } 100% { left: 200%; } }
@@ -92,7 +92,7 @@
             .scan-warning { border-left: none; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px; text-align: center; }
         }
 
-        /* POSTS GRID */
+        /* GRID */
         .container { padding: 20px; max-width: 800px; margin: 0 auto; min-height: 60vh; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
@@ -129,7 +129,7 @@
     <canvas id="matrix"></canvas>
 
     <div id="secret-terminal">
-        <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">Linux Lab Shell v10.0<br>Digite 'help' para ver os comandos.<br></div>
+        <div id="terminal-output" style="color:#ccc; margin-bottom:10px;">Linux Lab Shell v10.1<br>Digite 'help' para ver os comandos.<br></div>
         <div style="display:flex;">
             <span style="color:var(--matrix-color); margin-right:10px;">root@linuxlab:~$</span>
             <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; width:100%; outline:none; font-family:'Courier New', monospace;" autocomplete="off">
@@ -154,7 +154,6 @@
         </header>
 
         <div class="container">
-            
             <div id="scanner-widget">
                 <div class="scan-warning">
                     <strong style="color:var(--accent-color)">[ ! ] SIMULATION MODE</strong><br>
@@ -298,7 +297,9 @@
             if (e.key === 'Enter') {
                 const cmd = this.value.toLowerCase().trim();
                 this.value = ''; 
-                document.getElementById('terminal-output').innerHTML += `<div style="color:var(--matrix-color)">root@linuxlab:~$ ${cmd}</div>`;
+                // CORRIGIDO: Agora o terminal também usa a cor do tema atual
+                const corAtual = getComputedStyle(document.body).getPropertyValue('--matrix-color');
+                document.getElementById('terminal-output').innerHTML += `<div style="color:${corAtual}">root@linuxlab:~$ ${cmd}</div>`;
                 
                 if(cmd === 'reboot') location.reload();
                 else if(cmd === 'date') document.getElementById('terminal-output').innerHTML += `<div style="color:#aaa">${new Date().toString()}</div>`;
@@ -310,7 +311,7 @@
             }
         });
 
-        // --- SISTEMA DE CORES/TEMAS ---
+        // --- SISTEMA DE CORES (MATRIX FIX) ---
         const themes = [
             { class: '', name: 'VERDE' },
             { class: 'theme-infected', name: 'INFECTED' },
@@ -320,18 +321,15 @@
         let currentThemeIndex = 0;
 
         window.ciclarTema = function() {
-            // Remove todos os temas anteriores
             document.body.classList.remove('theme-infected', 'theme-cyber', 'theme-frost');
-            
-            // Avança para o próximo
             currentThemeIndex = (currentThemeIndex + 1) % themes.length;
             const nextTheme = themes[currentThemeIndex];
-            
-            // Aplica novo tema (se houver classe)
             if(nextTheme.class) document.body.classList.add(nextTheme.class);
-            
-            // Atualiza texto do botão
             document.getElementById('btn-tema').innerText = `[ 🎨 COR: ${nextTheme.name} ]`;
+            
+            // FIX: Limpa a tela do Matrix para mudar de cor imediatamente
+            const c = document.getElementById('matrix').getContext('2d');
+            c.clearRect(0,0,window.innerWidth, window.innerHeight);
         };
 
         // Posts
@@ -415,14 +413,16 @@
         }
         digitarTerminal();
 
-        // MATRIX COM CORES DINÂMICAS
+        // MATRIX COM FIX DE COR
         const canvas = document.getElementById('matrix'), ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const drops = Array(Math.floor(canvas.width/14)).fill(1);
         setInterval(() => { 
             ctx.fillStyle='rgba(0,0,0,0.05)'; 
             ctx.fillRect(0,0,canvas.width,canvas.height); 
-            // Pega a cor atual da variável --matrix-color
-            ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--matrix-color'); 
+            
+            // CORRIGIDO: Pega a cor do BODY (onde a classe do tema está)
+            ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--matrix-color'); 
+            
             ctx.font='14px monospace'; 
             drops.forEach((y,i)=>{ ctx.fillText("01LINUX"[Math.floor(Math.random()*7)], i*14, y*14); if(y*14>canvas.height && Math.random()>0.975) drops[i]=0; drops[i]++; }); 
         }, 50);
