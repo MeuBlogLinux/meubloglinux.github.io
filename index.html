@@ -148,7 +148,7 @@
 
     <div id="secret-terminal">
         <div id="terminal-output" style="color:#aaa; margin-bottom:10px;">
-            LINUX LAB KERNEL [v12.1]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
+            LINUX LAB KERNEL [v12.2]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
         </div>
         <div style="display:flex;">
             <span style="color:var(--matrix-color); margin-right:10px;">root@linuxlab:~#</span>
@@ -204,13 +204,11 @@
             <div id="conteudo-post"></div>
             <div id="comentarios-section" style="margin-top:40px; border-top:1px dashed var(--border); padding-top:20px;">
                 <h3 style="color:var(--accent-color)">// COMMS_LOG (Discussão)</h3>
-                
                 <div class="comment-form" style="background:#111; padding:15px; border-radius:5px; border:1px solid #333;">
                     <input type="text" id="coment-nome" placeholder="Codename (Seu Nome)" style="width:100%; background:#000; border:1px solid #333; color:var(--matrix-color); padding:10px; margin-bottom:5px;">
                     <textarea id="coment-texto" rows="3" placeholder="Digite sua mensagem aqui..." style="width:100%; background:#000; border:1px solid #333; color:#ccc; padding:10px;"></textarea>
                     <button class="btn-comment" onclick="window.enviarComentario()" style="background:var(--matrix-color); color:#000; border:none; padding:8px 20px; font-weight:bold; cursor:pointer; margin-top:5px;">[ ENVIAR DADOS ]</button>
                 </div>
-                
                 <div id="lista-comentarios" style="margin-top: 20px;"></div>
             </div>
         </div>
@@ -233,7 +231,7 @@
         <button class="btn-voltar" onclick="history.back()">< VOLTAR</button>
         <div class="overlay-content" style="max-width: 800px; margin: 0 auto;">
             <h2 style="color:var(--matrix-color)">// SYSTEM_INFO</h2>
-            <p><strong>LINUX LAB v12.1</strong></p>
+            <p><strong>LINUX LAB v12.2</strong></p>
             <p>Este projeto nasceu da necessidade de centralizar o conhecimento sobre sistemas operacionais livres, segurança ofensiva e a cultura hacker.</p>
             
             <h3 style="color:var(--accent-color)">// FILOSOFIA</h3>
@@ -262,13 +260,15 @@
             <hr style="border-color:#333; margin: 20px 0;">
             <div class="help-box">
                 <div><span class="help-cmd">set-theme [nome]</span> Muda as cores (ex: set-theme cyber).</div>
-                <div><span class="help-cmd">matrix red/blue</span> Troca cor do terminal.</div>
+                <div><span class="help-cmd">matrix red/blue</span> Troca cor do terminal (Atalho).</div>
                 <div><span class="help-cmd">reboot</span> Reinicia a interface.</div>
+                <div><span class="help-cmd">whoami</span> Mostra usuário atual.</div>
+                <div><span class="help-cmd">date</span> Mostra hora do servidor.</div>
                 <div><span class="help-cmd">clear</span> Limpa a tela.</div>
             </div>
             
             <button id="btn-iniciar-sessao" class="btn-comment" onclick="window.iniciarSessao()" style="width:100%; background:var(--matrix-color); color:black; padding:15px; font-size:1.1rem; border:none; cursor:pointer;">[ INICIAR SESSÃO ]</button>
-            <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:10px;">*Este manual ficará disponível no menu [AJUDA].</p>
+            <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:10px;">*Este manual ficará disponível no menu [MANUAL].</p>
         </div>
     </div>
 
@@ -310,7 +310,7 @@
             if (!jaViu) { 
                 window.abrirTutorial(); 
             } else {
-                // Se já viu, esconde o botão de "Iniciar Sessão" do overlay (caso ele abra via menu)
+                // Se já viu, esconde o botão de "Iniciar Sessão" e vai pra home
                 const btn = document.getElementById('btn-iniciar-sessao');
                 if(btn) btn.style.display = 'none';
                 document.getElementById('home-view').style.display = 'block';
@@ -349,7 +349,7 @@
         const savedTheme = localStorage.getItem('linux_lab_theme_index');
         if(savedTheme !== null) aplicarTema(parseInt(savedTheme));
 
-        // --- TERMINAL CORRIGIDO ---
+        // --- TERMINAL FIX (V12.2) ---
         window.toggleTerminal = () => { 
             const t = document.getElementById('secret-terminal'); 
             t.classList.toggle('open');
@@ -365,7 +365,7 @@
                 const cmd = args[0];
                 this.value = ''; 
                 
-                // CORREÇÃO: Pega a cor direto da variável CSS do root/body
+                // CORREÇÃO: Pega a cor direto da variável CSS
                 const computedStyle = getComputedStyle(document.body);
                 const corMatrix = computedStyle.getPropertyValue('--matrix-color').trim();
                 const output = document.getElementById('terminal-output');
@@ -375,6 +375,8 @@
                 if(cmd === 'reboot') location.reload();
                 else if(cmd === 'clear') output.innerHTML = '';
                 else if(cmd === 'exit') window.toggleTerminal();
+                else if(cmd === 'whoami') output.innerHTML += `<div>guest_user@linux_lab</div>`;
+                else if(cmd === 'date') output.innerHTML += `<div>${new Date().toString()}</div>`;
                 else if(cmd === 'set-theme') {
                     const themeName = args[1];
                     const foundIndex = themes.findIndex(t => t.id === themeName);
@@ -386,8 +388,16 @@
                         output.innerHTML += `<div style="color:#ff0000">Theme not found. Try: default, cyber, frost, crimson, amethyst, solar</div>`;
                     }
                 }
+                // COMANDO MATRIX RESTAURADO COMO ATALHO
+                else if(cmd === 'matrix') {
+                    const color = args[1];
+                    if(color === 'red') { aplicarTema(3); output.innerHTML += `<div>>> Matrix Red Mode Activated</div>`; }
+                    else if(color === 'blue') { aplicarTema(2); output.innerHTML += `<div>>> Matrix Blue Mode Activated</div>`; }
+                    else if(color === 'green') { aplicarTema(0); output.innerHTML += `<div>>> Matrix Default Mode Activated</div>`; }
+                    else { output.innerHTML += `<div>Usage: matrix [red/blue/green]</div>`; }
+                }
                 else if(cmd === 'help') {
-                    output.innerHTML += `<div style="color:#aaa">COMMANDS: set-theme [name], clear, reboot, exit</div>`;
+                    output.innerHTML += `<div style="color:#aaa">COMMANDS: set-theme [name], matrix [color], whoami, date, clear, reboot, exit</div>`;
                 }
                 else {
                     output.innerHTML += `<div style="color:#ff0000">Command not found.</div>`;
@@ -412,7 +422,7 @@
         // --- NAV & POSTS ---
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
         window.abrirTutorial = () => {
-            // Se abrir pelo menu, verifica se deve mostrar o botão
+            // Lógica do botão
             const jaViu = localStorage.getItem('vistoTutorial');
             const btn = document.getElementById('btn-iniciar-sessao');
             if(jaViu) btn.style.display = 'none';
@@ -501,7 +511,7 @@
         }
 
         // BOOT ANIMATION
-        const mensagens = [ "Iniciando Kernel v12.1...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
+        const mensagens = [ "Iniciando Kernel v12.2...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
         async function digitarTerminal() {
             const elemento = document.getElementById('terminal-typing');
             for (let i = 0; i < mensagens.length; i++) {
