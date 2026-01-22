@@ -52,7 +52,7 @@
         .search-box { margin: 20px auto; max-width: 90%; text-align: center; }
         #busca-input { width: 100%; max-width: 400px; padding: 10px; background: var(--bg); border: 1px solid var(--accent-color); color: var(--matrix-color); outline: none; border-radius: 5px; }
 
-        /* COOKIE BANNER (NOVO) */
+        /* COOKIE BANNER */
         #cookie-banner {
             position: fixed; bottom: -200px; left: 0; width: 100%;
             background: rgba(10, 10, 10, 0.95); border-top: 2px solid var(--accent-color);
@@ -65,7 +65,7 @@
         .btn-accept { background: var(--matrix-color); color: #000; }
         .btn-reject { background: transparent; border: 1px solid #555; color: #888; }
 
-        /* COMENTÁRIOS 2.0 (VISUAL FÓRUM) */
+        /* COMENTÁRIOS */
         .comment-box { 
             background: rgba(255,255,255,0.03); 
             border-left: 3px solid var(--matrix-color); 
@@ -148,7 +148,7 @@
 
     <div id="secret-terminal">
         <div id="terminal-output" style="color:#aaa; margin-bottom:10px;">
-            LINUX LAB KERNEL [v12.0]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
+            LINUX LAB KERNEL [v12.1]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
         </div>
         <div style="display:flex;">
             <span style="color:var(--matrix-color); margin-right:10px;">root@linuxlab:~#</span>
@@ -233,8 +233,24 @@
         <button class="btn-voltar" onclick="history.back()">< VOLTAR</button>
         <div class="overlay-content" style="max-width: 800px; margin: 0 auto;">
             <h2 style="color:var(--matrix-color)">// SYSTEM_INFO</h2>
-            <p>Bem-vindo ao <strong>Linux Lab</strong>.</p>
-            <p>Admin: <strong style="color:var(--accent-color)">Danilo Gardiano</strong></p>
+            <p><strong>LINUX LAB v12.1</strong></p>
+            <p>Este projeto nasceu da necessidade de centralizar o conhecimento sobre sistemas operacionais livres, segurança ofensiva e a cultura hacker.</p>
+            
+            <h3 style="color:var(--accent-color)">// FILOSOFIA</h3>
+            <p>Acreditamos que o conhecimento deve ser livre (as in free speech), assim como o código que rodamos. Em um mundo de "Walled Gardens" e sistemas fechados, o terminal é a nossa última linha de defesa.</p>
+            <p>Aqui você não encontrará tutoriais genéricos. Nosso foco é a autonomia do usuário: entender como o sistema pensa, como a rede trafega e como a segurança pode ser quebrada (e fortificada).</p>
+
+            <h3 style="color:var(--accent-color)">// TECH STACK</h3>
+            <ul style="list-style:square; margin-left:20px; color:#ccc;">
+                <li>Frontend: HTML5, CSS3 (Neon UI), Vanilla JS</li>
+                <li>Backend: Google Firebase (NoSQL)</li>
+                <li>Security: Client-Side Encryption Simulation</li>
+            </ul>
+
+            <div style="margin-top: 40px; border-top: 1px dashed var(--matrix-color); padding-top: 20px; text-align:center;">
+                <p><em>"Talk is cheap. Show me the code."</em> — Linus Torvalds</p>
+                <p>Admin / Developer: <strong style="color:var(--accent-color)">Danilo Gardiano</strong></p>
+            </div>
         </div>
     </div>
 
@@ -245,11 +261,14 @@
             <p><strong>ACCESS LEVEL:</strong> GUEST</p>
             <hr style="border-color:#333; margin: 20px 0;">
             <div class="help-box">
-                <div><span class="help-cmd">set-theme</span> Muda as cores.</div>
+                <div><span class="help-cmd">set-theme [nome]</span> Muda as cores (ex: set-theme cyber).</div>
                 <div><span class="help-cmd">matrix red/blue</span> Troca cor do terminal.</div>
+                <div><span class="help-cmd">reboot</span> Reinicia a interface.</div>
+                <div><span class="help-cmd">clear</span> Limpa a tela.</div>
             </div>
-            <button class="btn-comment" onclick="window.iniciarSessao()" style="width:100%; background:var(--matrix-color); color:black; padding:15px; font-size:1.1rem; border:none; cursor:pointer;">[ INICIAR SESSÃO ]</button>
-            <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:10px;">*Clicar aqui salvará um cookie para não exibir esta tela novamente.</p>
+            
+            <button id="btn-iniciar-sessao" class="btn-comment" onclick="window.iniciarSessao()" style="width:100%; background:var(--matrix-color); color:black; padding:15px; font-size:1.1rem; border:none; cursor:pointer;">[ INICIAR SESSÃO ]</button>
+            <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:10px;">*Este manual ficará disponível no menu [AJUDA].</p>
         </div>
     </div>
 
@@ -271,11 +290,9 @@
         };
         window.recusarCookies = () => {
             document.getElementById('cookie-banner').classList.remove('show');
-            // Não salvamos nada no localStorage se recusar (apenas fecha o aviso)
         };
 
         window.iniciarSessao = () => { 
-            // Salva que o usuário já viu o tutorial
             localStorage.setItem('vistoTutorial', 'sim'); 
             history.back();
             document.getElementById('tutorial-overlay').style.display = 'none';
@@ -289,10 +306,13 @@
                 document.getElementById('cookie-banner').classList.add('show');
             }
             // Check Tutorial
-            if (!localStorage.getItem('vistoTutorial')) { 
+            const jaViu = localStorage.getItem('vistoTutorial');
+            if (!jaViu) { 
                 window.abrirTutorial(); 
             } else {
-                // Se já viu tutorial, garante que home está visível
+                // Se já viu, esconde o botão de "Iniciar Sessão" do overlay (caso ele abra via menu)
+                const btn = document.getElementById('btn-iniciar-sessao');
+                if(btn) btn.style.display = 'none';
                 document.getElementById('home-view').style.display = 'block';
             }
         }, 1000);
@@ -329,7 +349,7 @@
         const savedTheme = localStorage.getItem('linux_lab_theme_index');
         if(savedTheme !== null) aplicarTema(parseInt(savedTheme));
 
-        // --- TERMINAL ---
+        // --- TERMINAL CORRIGIDO ---
         window.toggleTerminal = () => { 
             const t = document.getElementById('secret-terminal'); 
             t.classList.toggle('open');
@@ -344,9 +364,13 @@
                 const args = rawCmd.split(' ');
                 const cmd = args[0];
                 this.value = ''; 
-                const corAtual = getComputedStyle(document.body).getPropertyValue('--matrix-color');
+                
+                // CORREÇÃO: Pega a cor direto da variável CSS do root/body
+                const computedStyle = getComputedStyle(document.body);
+                const corMatrix = computedStyle.getPropertyValue('--matrix-color').trim();
                 const output = document.getElementById('terminal-output');
-                output.innerHTML += `<div style="color:${corAtual}">root@linuxlab:~# ${rawCmd}</div>`;
+                
+                output.innerHTML += `<div style="color:${corMatrix}">root@linuxlab:~# ${rawCmd}</div>`;
                 
                 if(cmd === 'reboot') location.reload();
                 else if(cmd === 'clear') output.innerHTML = '';
@@ -357,8 +381,16 @@
                     if(foundIndex !== -1) {
                         document.body.classList.remove(...themes.map(t => t.class).filter(c => c));
                         aplicarTema(foundIndex);
-                        output.innerHTML += `<div>Theme set to ${themeName}</div>`;
+                        output.innerHTML += `<div>Theme set to ${themeName.toUpperCase()}</div>`;
+                    } else {
+                        output.innerHTML += `<div style="color:#ff0000">Theme not found. Try: default, cyber, frost, crimson, amethyst, solar</div>`;
                     }
+                }
+                else if(cmd === 'help') {
+                    output.innerHTML += `<div style="color:#aaa">COMMANDS: set-theme [name], clear, reboot, exit</div>`;
+                }
+                else {
+                    output.innerHTML += `<div style="color:#ff0000">Command not found.</div>`;
                 }
                 output.scrollTop = output.scrollHeight;
             }
@@ -379,7 +411,15 @@
 
         // --- NAV & POSTS ---
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
-        window.abrirTutorial = () => abrirOverlay('tutorial-overlay', '#ajuda');
+        window.abrirTutorial = () => {
+            // Se abrir pelo menu, verifica se deve mostrar o botão
+            const jaViu = localStorage.getItem('vistoTutorial');
+            const btn = document.getElementById('btn-iniciar-sessao');
+            if(jaViu) btn.style.display = 'none';
+            else btn.style.display = 'block';
+            
+            abrirOverlay('tutorial-overlay', '#ajuda');
+        };
         window.abrirContato = () => abrirOverlay('contato-overlay', '#contato');
         
         function abrirOverlay(id, hash) { document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none'); document.getElementById('home-view').style.display = 'none'; document.getElementById(id).style.display = 'block'; window.scrollTo(0,0); history.pushState({page: id}, null, hash); }
@@ -419,7 +459,6 @@
                     snapshot.forEach(doc => {
                         const c = doc.data();
                         const dataFormatada = new Date(c.data).toLocaleDateString();
-                        // GERA AVATAR COM A PRIMEIRA LETRA
                         const inicial = c.nome ? c.nome.charAt(0).toUpperCase() : '?';
                         
                         divComents.innerHTML += `
@@ -462,7 +501,7 @@
         }
 
         // BOOT ANIMATION
-        const mensagens = [ "Iniciando Kernel v12.0...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
+        const mensagens = [ "Iniciando Kernel v12.1...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
         async function digitarTerminal() {
             const elemento = document.getElementById('terminal-typing');
             for (let i = 0; i < mensagens.length; i++) {
