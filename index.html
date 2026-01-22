@@ -148,7 +148,7 @@
 
     <div id="secret-terminal">
         <div id="terminal-output" style="color:#aaa; margin-bottom:10px;">
-            LINUX LAB KERNEL [v12.2]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
+            LINUX LAB KERNEL [v12.3]<br>Type <span style="color:var(--accent-color)">'help'</span> for command list.<br>System ready.<br>
         </div>
         <div style="display:flex;">
             <span style="color:var(--matrix-color); margin-right:10px;">root@linuxlab:~#</span>
@@ -231,7 +231,7 @@
         <button class="btn-voltar" onclick="history.back()">< VOLTAR</button>
         <div class="overlay-content" style="max-width: 800px; margin: 0 auto;">
             <h2 style="color:var(--matrix-color)">// SYSTEM_INFO</h2>
-            <p><strong>LINUX LAB v12.2</strong></p>
+            <p><strong>LINUX LAB v12.3</strong></p>
             <p>Este projeto nasceu da necessidade de centralizar o conhecimento sobre sistemas operacionais livres, segurança ofensiva e a cultura hacker.</p>
             
             <h3 style="color:var(--accent-color)">// FILOSOFIA</h3>
@@ -255,12 +255,11 @@
     <div id="tutorial-overlay" class="overlay">
         <button class="btn-voltar" onclick="window.iniciarSessao()">< FECHAR</button>
         <div class="overlay-content">
-            <h2 style="color:var(--matrix-color)">// SYSTEM_MANUAL_v3.0</h2>
+            <h2 style="color:var(--matrix-color)">// SYSTEM_MANUAL_v3.1</h2>
             <p><strong>ACCESS LEVEL:</strong> GUEST</p>
             <hr style="border-color:#333; margin: 20px 0;">
             <div class="help-box">
                 <div><span class="help-cmd">set-theme [nome]</span> Muda as cores (ex: set-theme cyber).</div>
-                <div><span class="help-cmd">matrix red/blue</span> Troca cor do terminal (Atalho).</div>
                 <div><span class="help-cmd">reboot</span> Reinicia a interface.</div>
                 <div><span class="help-cmd">whoami</span> Mostra usuário atual.</div>
                 <div><span class="help-cmd">date</span> Mostra hora do servidor.</div>
@@ -310,7 +309,7 @@
             if (!jaViu) { 
                 window.abrirTutorial(); 
             } else {
-                // Se já viu, esconde o botão de "Iniciar Sessão" e vai pra home
+                // Se já viu, esconde o botão de "Iniciar Sessão"
                 const btn = document.getElementById('btn-iniciar-sessao');
                 if(btn) btn.style.display = 'none';
                 document.getElementById('home-view').style.display = 'block';
@@ -349,7 +348,7 @@
         const savedTheme = localStorage.getItem('linux_lab_theme_index');
         if(savedTheme !== null) aplicarTema(parseInt(savedTheme));
 
-        // --- TERMINAL FIX (V12.2) ---
+        // --- TERMINAL CLEAN (V12.3) ---
         window.toggleTerminal = () => { 
             const t = document.getElementById('secret-terminal'); 
             t.classList.toggle('open');
@@ -365,7 +364,6 @@
                 const cmd = args[0];
                 this.value = ''; 
                 
-                // CORREÇÃO: Pega a cor direto da variável CSS
                 const computedStyle = getComputedStyle(document.body);
                 const corMatrix = computedStyle.getPropertyValue('--matrix-color').trim();
                 const output = document.getElementById('terminal-output');
@@ -388,16 +386,8 @@
                         output.innerHTML += `<div style="color:#ff0000">Theme not found. Try: default, cyber, frost, crimson, amethyst, solar</div>`;
                     }
                 }
-                // COMANDO MATRIX RESTAURADO COMO ATALHO
-                else if(cmd === 'matrix') {
-                    const color = args[1];
-                    if(color === 'red') { aplicarTema(3); output.innerHTML += `<div>>> Matrix Red Mode Activated</div>`; }
-                    else if(color === 'blue') { aplicarTema(2); output.innerHTML += `<div>>> Matrix Blue Mode Activated</div>`; }
-                    else if(color === 'green') { aplicarTema(0); output.innerHTML += `<div>>> Matrix Default Mode Activated</div>`; }
-                    else { output.innerHTML += `<div>Usage: matrix [red/blue/green]</div>`; }
-                }
                 else if(cmd === 'help') {
-                    output.innerHTML += `<div style="color:#aaa">COMMANDS: set-theme [name], matrix [color], whoami, date, clear, reboot, exit</div>`;
+                    output.innerHTML += `<div style="color:#aaa">COMMANDS: set-theme [name], whoami, date, clear, reboot, exit</div>`;
                 }
                 else {
                     output.innerHTML += `<div style="color:#ff0000">Command not found.</div>`;
@@ -422,12 +412,10 @@
         // --- NAV & POSTS ---
         window.abrirSobre = () => abrirOverlay('sobre-overlay', '#sobre');
         window.abrirTutorial = () => {
-            // Lógica do botão
             const jaViu = localStorage.getItem('vistoTutorial');
             const btn = document.getElementById('btn-iniciar-sessao');
             if(jaViu) btn.style.display = 'none';
             else btn.style.display = 'block';
-            
             abrirOverlay('tutorial-overlay', '#ajuda');
         };
         window.abrirContato = () => abrirOverlay('contato-overlay', '#contato');
@@ -511,7 +499,7 @@
         }
 
         // BOOT ANIMATION
-        const mensagens = [ "Iniciando Kernel v12.2...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
+        const mensagens = [ "Iniciando Kernel v12.3...", "Carregando módulos...", "Verificando integridade...", "Sistema Online." ];
         async function digitarTerminal() {
             const elemento = document.getElementById('terminal-typing');
             for (let i = 0; i < mensagens.length; i++) {
